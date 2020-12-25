@@ -3,7 +3,7 @@ package com.example.distributedcommondatasource.service;
 
 import com.example.distributedcommon.custom.SysConst;
 import com.example.distributedcommon.utils.DateUtils;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
+import com.example.distributedcommondatasource.utils.UniqueIdUtils;
 
 import java.time.LocalDateTime;
 
@@ -93,7 +93,10 @@ public interface ConstantService {
 
     LocalDateTime currentDateTime = DateUtils.currentDateTime();
 
-   default long generateKey(){
-       return (Long) new SnowflakeShardingKeyGenerator().generateKey();
+    /**
+     * 唯一id（雪花id）
+     */
+    default long generateKey() {
+        return UniqueIdUtils.SnowflakeShardingKeyGenerator();
     }
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8782
+  port: 8783
 eureka:
   client:
     fetch-registry: true
@@ -24,7 +24,7 @@ feign:
       min-request-size: 2048 # 超过2048的字节进行压缩
 spring:
   application:
-    name: service-distributed-book
+    name: service-distributed-authentication
   jpa:
     database: mysql
     show-sql: true
@@ -50,31 +50,44 @@ spring:
         password: root
     # 分片规则
     sharding:
-      binding-tables: t_book
+      binding-tables: t_user
       default-database-strategy:
         inline:
-          algorithm-expression: ds-student-$->{user_id % 2}
-          sharding-column: user_id
+          algorithm-expression: ds-student-$->{id % 2}
+          sharding-column: id
       tables:
-        # book 表配置
-        t_book:
+        # user 表配置
+        t_user:
           #          actualDataNodes: ds-orders-$->{0..1}.orders_$->{0..4} # 映射到 ds-orders 数据源的 orders 表
           #          actualDataNodes: ds-orders-0.orders_0, ds-orders-0.orders_2, ds-orders-0.orders_4, ds-orders-0.orders_6, ds-orders-1.orders_1, ds-orders-1.orders_3, ds-orders-1.orders_5, ds-orders-1.orders_7
-          actual-data-nodes: ds-student-0.t_book_$->{[0,1,2]}, ds-student-1.t_book_$->{[0,1,2]} # 映射到 ds-orders-0 和 ds-orders-1 数据源的 orders 表们
+          actual-data-nodes: ds-student-0.t_user_$->{[0,1]}, ds-student-1.t_user_$->{[0,1]} # 映射到 ds-orders-0 和 ds-orders-1 数据源的 orders 表们
           key-generator: # 主键生成策略
             column: id
             type: SNOWFLAKE
           database-strategy:
             inline:
-              algorithm-expression: ds-student-$->{user_id % 2}
-              sharding-column: user_id
+              algorithm-expression: ds-student-$->{id % 2}
+              sharding-column: id
           table-strategy:
             inline:
-              algorithm-expression: t_book_$->{user_id % 3}
-              sharding-column: user_id
+              algorithm-expression: t_user_$->{id % 2}
+              sharding-column: id
     # 拓展属性配置
     props:
       sql:
         show: true # 打印 SQL
+custom:
+  jwt:
+    header: authorization
+    expiration: 2  #过期时间
+    expiration-unit: hours # 单位
+    refresh-expiration: 6 #刷新时间 单位 小时
+    refresh-expiration-unit: hours # 单位
+    remember-me-expiration: 30 #记住我-过期时间 单位 天
+    remember-me-expiration-unit: days #记住我-过期时间 单位
+    remember-me-refresh-expiration: 40 #记住我-刷新时间 单位 天
+    remember-me-refresh-expiration-unit: days #记住我-刷新时间 单位
+    token-head: Bearer
+    secret: 1,1,1,1,1,1,1,1,1,1,1,1,1,1,2
 
 
