@@ -70,7 +70,7 @@ spring:
               sharding-column: id
           table-strategy:
             inline:
-              algorithm-expression: t_user_$->{id % 2}
+              algorithm-expression: t_user_$->{id % 3}
               sharding-column: id
     # 拓展属性配置
     props:

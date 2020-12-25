@@ -6,11 +6,15 @@ import com.example.distributedauthentication.service.UserService;
 import com.example.distributedauthentication.utils.UserUtils;
 import com.example.distributedcommon.utils.Digests;
 import com.example.distributedcommon.utils.Encodes;
+import com.google.common.collect.Queues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,11 +30,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final ConcurrentLinkedQueue<Long> concurrentLinkedQueue = Queues.newConcurrentLinkedQueue();
+
     @Override
-    @Transactional(rollbackOn = RuntimeException.class)
+    @Transactional(rollbackFor = RuntimeException.class, isolation = Isolation.READ_COMMITTED)
     public User save(User user) {
         Long id = user.getId();
-        return Optional.ofNullable(id).filter(i -> i != 0L)
+        User user1 = Optional.ofNullable(id).filter(i -> i != 0L)
                 .map(i -> {
                     Optional<User> userOfDb = userRepository.findById(i);
                     User userOfNeed = userOfDb.map(u -> {
@@ -50,6 +56,9 @@ public class UserServiceImpl implements UserService {
                     user.setDeleteState(UN_DELETED);
                     return userRepository.save(user);
                 });
+        concurrentLinkedQueue.add(user1.getId());
+        System.out.println("concurrentLinkedQueue = " + concurrentLinkedQueue.size());
+        return user1;
     }
 
     @Override
