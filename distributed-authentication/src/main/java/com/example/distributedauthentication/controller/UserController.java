@@ -1,14 +1,17 @@
 package com.example.distributedauthentication.controller;
 
+import com.example.distributedauthentication.entity.User;
 import com.example.distributedauthentication.service.UserService;
+import com.example.distributedauthentication.utils.DtoUserUtils;
 import com.example.distributedcommon.base.BaseController;
 import com.example.distributedcommon.base.ResultMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -19,7 +22,7 @@ import java.util.Random;
  * description:
  */
 @AllArgsConstructor
-@RequestMapping("api/book")
+@RequestMapping("api/user")
 @RestController
 public class UserController extends BaseController {
 
@@ -39,8 +42,13 @@ public class UserController extends BaseController {
                 String email = "email" + random.nextInt() + "@qq.com";
                 userService.createdUser(account, password, userName, phone, email);
             }).start();
-
         }
         return success();
+    }
+
+    @GetMapping("findAllUser")
+    public ResultMessage findAllUser() {
+        List<User> userList = userService.findAllUser();
+        return success(DtoUserUtils.changeUser(userList));
     }
 }

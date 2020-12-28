@@ -29,6 +29,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book save(Book book) {
         Long id = book.getId();
+        long generateKey = generateKey();
         return Optional.ofNullable(id).filter(i -> i != 0L)
                 .map(i -> {
                     Optional<Book> bookOfDb = bookRepository.findById(i);
@@ -36,7 +37,7 @@ public class BookServiceImpl implements BookService {
                         b.setBookName(book.getBookName());
                         return b;
                     }).orElseGet(() -> {
-                        book.setId(generateKey());
+                        book.setId(generateKey);
                         book.setCreatedTime(currentDateTime);
                         book.setDeleteState(UN_DELETED);
                         return book;
@@ -44,7 +45,7 @@ public class BookServiceImpl implements BookService {
                     return bookRepository.save(bookOfNeed);
                 })
                 .orElseGet(() -> {
-                    book.setId(generateKey());
+                    book.setId(generateKey);
                     book.setCreatedTime(currentDateTime);
                     book.setDeleteState(UN_DELETED);
                     return bookRepository.save(book);

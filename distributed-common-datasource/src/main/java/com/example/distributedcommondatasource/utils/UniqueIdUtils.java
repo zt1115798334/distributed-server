@@ -40,6 +40,7 @@ public class UniqueIdUtils {
     }
 
     public static long SnowflakeShardingKeyGenerator() {
-        return (Long) new SnowflakeShardingKeyGenerator().generateKey();
+//        return (Long) new SnowflakeShardingKeyGenerator().generateKey();
+        return SnowflakeIdWorker.generateId();
     }
 }

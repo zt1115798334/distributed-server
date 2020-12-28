@@ -6,15 +6,15 @@ import com.example.distributedauthentication.service.UserService;
 import com.example.distributedauthentication.utils.UserUtils;
 import com.example.distributedcommon.utils.Digests;
 import com.example.distributedcommon.utils.Encodes;
-import com.google.common.collect.Queues;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,12 +30,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final ConcurrentLinkedQueue<Long> concurrentLinkedQueue = Queues.newConcurrentLinkedQueue();
+    private final ConcurrentHashMap<Long, Long> concurrentHashMap = new ConcurrentHashMap<>();
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, isolation = Isolation.READ_COMMITTED)
     public User save(User user) {
         Long id = user.getId();
+
+        long generateKey = generateKey();
         User user1 = Optional.ofNullable(id).filter(i -> i != 0L)
                 .map(i -> {
                     Optional<User> userOfDb = userRepository.findById(i);
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
                         u.setUserName(user.getUserName());
                         return u;
                     }).orElseGet(() -> {
-                        user.setId(generateKey());
+                        user.setId(generateKey);
                         user.setCreatedTime(currentDateTime);
                         user.setDeleteState(UN_DELETED);
                         return user;
@@ -51,13 +53,13 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(userOfNeed);
                 })
                 .orElseGet(() -> {
-                    user.setId(generateKey());
+                    user.setId(generateKey);
                     user.setCreatedTime(currentDateTime);
                     user.setDeleteState(UN_DELETED);
                     return userRepository.save(user);
                 });
-        concurrentLinkedQueue.add(user1.getId());
-        System.out.println("concurrentLinkedQueue = " + concurrentLinkedQueue.size());
+        concurrentHashMap.put(generateKey, generateKey);
+        System.out.println("concurrentLinkedQueue = " + concurrentHashMap.size());
         return user1;
     }
 
@@ -69,5 +71,11 @@ public class UserServiceImpl implements UserService {
                 .account(account).password(password).salt(salt).userName(userName).phone(phone).email(email)
                 .build();
         this.save(buildUser);
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+    public List<User> findAllUser() {
+        return (List<User>) userRepository.findAll();
     }
 }

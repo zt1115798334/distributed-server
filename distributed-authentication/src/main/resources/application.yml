@@ -8,7 +8,7 @@ eureka:
       defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
   instance:
     prefer-ip-address: true
-    instance-id: service-distributed-book
+    instance-id: service-distributed-authentication
     lease-expiration-duration-in-seconds: 5
     lease-renewal-interval-in-seconds: 2
 feign:
@@ -60,17 +60,13 @@ spring:
         t_user:
           #          actualDataNodes: ds-orders-$->{0..1}.orders_$->{0..4} # 映射到 ds-orders 数据源的 orders 表
           #          actualDataNodes: ds-orders-0.orders_0, ds-orders-0.orders_2, ds-orders-0.orders_4, ds-orders-0.orders_6, ds-orders-1.orders_1, ds-orders-1.orders_3, ds-orders-1.orders_5, ds-orders-1.orders_7
-          actual-data-nodes: ds-student-0.t_user_$->{[0,1]}, ds-student-1.t_user_$->{[0,1]} # 映射到 ds-orders-0 和 ds-orders-1 数据源的 orders 表们
+          actual-data-nodes: ds-student-0.t_user, ds-student-1.t_user # 映射到 ds-orders-0 和 ds-orders-1 数据源的 orders 表们
           key-generator: # 主键生成策略
             column: id
             type: SNOWFLAKE
           database-strategy:
             inline:
               algorithm-expression: ds-student-$->{id % 2}
-              sharding-column: id
-          table-strategy:
-            inline:
-              algorithm-expression: t_user_$->{id % 3}
               sharding-column: id
     # 拓展属性配置
     props:
