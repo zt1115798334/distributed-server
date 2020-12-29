@@ -4,8 +4,6 @@ import com.example.distributedauthentication.entity.User;
 import com.example.distributedauthentication.repo.UserRepository;
 import com.example.distributedauthentication.service.UserService;
 import com.example.distributedauthentication.utils.UserUtils;
-import com.example.distributedcommon.utils.Digests;
-import com.example.distributedcommon.utils.Encodes;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -65,10 +63,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createdUser(String account, String password, String userName, String phone, String email) {
-        String salt = Encodes.encodeHex(Digests.generateSalt(Digests.SALT_SIZE));
-        password = UserUtils.getEncryptPassword(account, password, salt);
+        password = UserUtils.getEncryptPassword(account, password);
         final User buildUser = User.builder()
-                .account(account).password(password).salt(salt).userName(userName).phone(phone).email(email)
+                .account(account).password(password).userName(userName).phone(phone).email(email)
                 .build();
         this.save(buildUser);
     }

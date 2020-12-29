@@ -7,8 +7,7 @@ create table if not exists t_user
     id           bigint      not null
     primary key,
     account      varchar(50) null,
-    password     varchar(50) null,
-    salt         varchar(20) null,
+    password     varchar(100) null,
     user_name    varchar(50) null,
     phone        varchar(50) null,
     email        varchar(50) null,
@@ -56,8 +55,7 @@ create table if not exists t_user
     id           bigint      not null
     primary key,
     account      varchar(50) null,
-    password     varchar(50) null,
-    salt         varchar(20) null,
+    password     varchar(100) null,
     user_name    varchar(50) null,
     phone        varchar(50) null,
     email        varchar(50) null,

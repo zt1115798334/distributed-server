@@ -1,7 +1,6 @@
 package com.example.distributedauthentication.utils;
 
-import com.example.distributedcommon.utils.Digests;
-import com.example.distributedcommon.utils.Encodes;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 /**
@@ -17,12 +16,11 @@ public class UserUtils {
      *
      * @param account  账户
      * @param password 未加密密码
-     * @param salt     盐
      * @return String
      */
-    public static String getEncryptPassword(String account, String password, String salt) {
-        byte[] hashPassword = Digests.sha1((account + password).getBytes(), Encodes.decodeHex(salt), Digests.HASH_INTERACTIONS);
-        return Encodes.encodeHex(hashPassword);
+    public static String getEncryptPassword(String account, String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
+        return encoder.encode(account + password);
     }
 
 }
