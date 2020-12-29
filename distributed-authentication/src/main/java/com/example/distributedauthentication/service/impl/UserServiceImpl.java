@@ -7,6 +7,7 @@ import com.example.distributedauthentication.utils.UserUtils;
 import com.example.distributedcommon.utils.Digests;
 import com.example.distributedcommon.utils.Encodes;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,7 +37,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = RuntimeException.class, isolation = Isolation.READ_COMMITTED)
     public User save(User user) {
         Long id = user.getId();
-
         long generateKey = generateKey();
         User user1 = Optional.ofNullable(id).filter(i -> i != 0L)
                 .map(i -> {
@@ -77,5 +77,15 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<User> findAllUser() {
         return (List<User>) userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findOptUserByAccount(String account) {
+        return userRepository.findByAccountAndDeleteState(account, UN_DELETED);
+    }
+
+    @Override
+    public User findUserByAccount(String account) {
+        return this.findOptUserByAccount(account).orElseThrow(() -> new UsernameNotFoundException("查无此人"));
     }
 }

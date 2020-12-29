@@ -3,6 +3,7 @@ package com.example.distributedauthentication.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.distributedauthentication.properties.JwtProperties;
+import com.example.distributedauthentication.security.SecurityUser;
 import com.example.distributedcommon.utils.DateUtils;
 import com.example.distributedcommondatasource.utils.UniqueIdUtils;
 import io.jsonwebtoken.Claims;
@@ -25,7 +26,7 @@ import java.util.Objects;
  */
 @AllArgsConstructor
 @Component
-public class JwtUtils {
+public class JwtTokenUtil {
     private static final String ROLE_REFRESH_TOKEN = "ROLE_REFRESH_TOKEN";
     private static final String CLAIM_KEY_USER_ID = "user_id";
     private static final String CLAIM_KEY_AUTHORITIES = "scope";
@@ -37,6 +38,23 @@ public class JwtUtils {
 
     private final JwtProperties jwtProperties;
 
+    /**
+     * 根据token 获取用户信息
+     * @param token
+     * @return
+     */
+    public SecurityUser getUserFromToken(String token) {
+        SecurityUser userDetail;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            Long userId = getUserIdFromToken(token);
+            String username = claims.getSubject();
+            userDetail = new SecurityUser(userId, username,  "");
+        } catch (Exception e) {
+            userDetail = null;
+        }
+        return userDetail;
+    }
     /**
      * 根据token获取用户id
      *
@@ -72,7 +90,7 @@ public class JwtUtils {
     }
 
 
-    private Date getExpirationDateFromToken(String token) {
+    public Date getExpirationDateFromToken(String token) {
         Date expiration;
         try {
             final Claims claims = getClaimsFromToken(token);
