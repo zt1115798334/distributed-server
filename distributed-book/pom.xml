@@ -6,11 +6,14 @@
 		<artifactId>distributed-server</artifactId>
 		<groupId>com.example</groupId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath />
 	</parent>
+
 	<artifactId>distributed-book</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>distributed-book</name>
 	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>

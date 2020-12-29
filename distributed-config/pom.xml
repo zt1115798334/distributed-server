@@ -6,7 +6,9 @@
        <artifactId>distributed-server</artifactId>
         <groupId>com.example</groupId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath />
     </parent>
+
     <artifactId>distributed-config</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>distributed-config</name>
