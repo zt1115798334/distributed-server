@@ -28,11 +28,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity //启动web安全性
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private  JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    private  RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler;
+    private final RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler;
 
-    private  JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     /**
      * 解决 无法直接注入 AuthenticationManager
