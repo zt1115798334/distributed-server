@@ -1,17 +1,14 @@
 package com.example.distributedauthentication;
 
-import com.example.distributedauthentication.service.UserService;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Random;
 
-@AllArgsConstructor
 @SpringBootTest
 class DistributedAuthenticationApplicationTests {
 
-	private final UserService userService;
+//	private final UserService userService;
 
 
 	@Test
@@ -24,7 +21,7 @@ class DistributedAuthenticationApplicationTests {
 			String userName = "userName" + random.nextInt();
 			String phone = "phone" + random.nextInt();
 			String email = "email" + random.nextInt() + "@qq.com";
-			userService.createdUser(account, password, userName, phone, email);
+//			userService.createdUser(account, password, userName, phone, email);
 		}
 	}
 

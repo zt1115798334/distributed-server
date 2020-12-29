@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private  RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler;
 
-    private  JwtAuthenticationTokenFilter authenticationTokenFilter;
+    private  JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     /**
      * 解决 无法直接注入 AuthenticationManager
@@ -48,10 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                              RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler,
-                             JwtAuthenticationTokenFilter authenticationTokenFilter) {
+                             JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.restAuthenticationAccessDeniedHandler = restAuthenticationAccessDeniedHandler;
-        this.authenticationTokenFilter = authenticationTokenFilter;
+        this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
     }
 
 
@@ -73,8 +74,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 基于token，所以不需要session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/**").permitAll()
                 // 对于登录login要允许匿名访问
-                .antMatchers("/api/**", "/favicon.ico").permitAll()
+                .antMatchers("/api/login/login", "/favicon.ico").permitAll()
                 // 访问/user 需要拥有admin权限
 //                .antMatchers("/user").hasAuthority("admin")
                 .and()
@@ -85,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 禁用缓存
         httpSecurity.headers().cacheControl();
         // 添加JWT filter
-        httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

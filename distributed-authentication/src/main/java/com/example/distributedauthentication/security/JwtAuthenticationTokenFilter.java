@@ -47,7 +47,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         Long userId = jwtTokenUtil.getUserIdFromToken(authToken);
         log.info("JwtAuthenticationTokenFilter[doFilterInternal] checking authentication " + username);
 
-        if (jwtTokenUtil.validateToken(authToken, userId, username) && username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (StringUtils.isNotEmpty(authToken) && jwtTokenUtil.validateToken(authToken, userId, username) && username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             SecurityUser userDetail = jwtTokenUtil.getUserFromToken(authToken);
             if (jwtTokenUtil.validateToken(authToken, userId, username)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
