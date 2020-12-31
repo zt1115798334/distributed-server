@@ -6,6 +6,9 @@ import com.example.distributedauthentication.service.LoginService;
 import com.example.distributedauthentication.utils.JwtTokenUtil;
 import com.example.distributedcommon.custom.SystemStatusCode;
 import com.example.distributedcommon.exception.OperationException;
+import com.example.distributedcommoncache.custom.CacheKeys;
+import com.example.distributedcommoncache.service.RedisDatabase;
+import com.example.distributedcommoncache.service.StringRedisService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +26,8 @@ public class LoginServiceImpl implements LoginService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final StringRedisService stringRedisService;
+
     @Override
     public ResponseUserToken login(String username, String password) {
         //用户验证
@@ -31,10 +36,15 @@ public class LoginServiceImpl implements LoginService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //生成token
         final SecurityUser userDetail = (SecurityUser) authentication.getPrincipal();
-        final String token = jwtTokenUtil.generateAccessToken(userDetail.getId(), userDetail.getAccount());
+        final Long userId = userDetail.getId();
+        final String accessToken = jwtTokenUtil.generateAccessToken(userDetail.getId(), userDetail.getAccount());
+        final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetail.getId(), userDetail.getAccount());
+
+        //token 存储redis
+        stringRedisService.setContainExpire(RedisDatabase.REDIS_ZERO, CacheKeys.getJwtAccessTokenKey(userId), accessToken);
+        stringRedisService.setContainExpire(RedisDatabase.REDIS_ZERO, CacheKeys.getJwtRefreshTokenKey(userId), refreshToken);
         //存储token
-//        jwtTokenUtil.putToken(username, token);
-        return new ResponseUserToken(token, userDetail);
+        return new ResponseUserToken(accessToken, userDetail);
     }
 
     private Authentication authenticate(String username, String password) {

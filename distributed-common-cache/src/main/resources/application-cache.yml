@@ -1,0 +1,23 @@
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: zkdjredis!
+    timeout: 300s
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 30
+        max-wait: 10s
+        min-idle: 10
+    redis-zero:
+      database: 0
+      host-name: ${spring.redis.host}
+      port: ${spring.redis.port}
+      password: ${spring.redis.password}
+    redis-first:
+      database: 1
+      host-name: ${spring.redis.host}
+      port: ${spring.redis.port}
+      password: ${spring.redis.password}
+

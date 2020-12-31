@@ -72,6 +72,8 @@ spring:
     props:
       sql:
         show: true # 打印 SQL
+  profiles:
+    include: cache
 custom:
   jwt:
     header: authorization

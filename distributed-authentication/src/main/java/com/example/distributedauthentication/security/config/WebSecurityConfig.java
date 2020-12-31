@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -74,11 +73,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 基于token，所以不需要session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/**").permitAll()
                 // 对于登录login要允许匿名访问
                 .antMatchers("/api/login/login", "/favicon.ico").permitAll()
                 // 访问/user 需要拥有admin权限
-//                .antMatchers("/user").hasAuthority("admin")
+                .antMatchers("/user").hasAuthority("admin")
                 .and()
                 .authorizeRequests()
                 // 除上面外的所有请求全部需要鉴权认证
