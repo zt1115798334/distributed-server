@@ -6,6 +6,9 @@ import com.example.distributedauthentication.utils.DtoUserUtils;
 import com.example.distributedcommon.base.BaseController;
 import com.example.distributedcommon.base.ResultMessage;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,7 @@ import java.util.Random;
  * date: 2020/12/21 17:41
  * description:
  */
+@Slf4j
 @AllArgsConstructor
 @RequestMapping("api/user")
 @RestController
@@ -48,6 +52,9 @@ public class UserController extends BaseController {
 
     @GetMapping("findAllUser")
     public ResultMessage findAllUser() {
+        //for debug
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("authentication: " + authentication.getAuthorities().toString());
         List<User> userList = userService.findAllUser();
         return success(DtoUserUtils.changeUser(userList));
     }

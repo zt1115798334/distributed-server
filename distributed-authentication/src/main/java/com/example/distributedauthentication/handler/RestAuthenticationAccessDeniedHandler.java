@@ -1,4 +1,4 @@
-package com.example.distributedauthentication.security;
+package com.example.distributedauthentication.handler;
 
 import com.example.distributedauthentication.utils.ResultUtil;
 import com.example.distributedcommon.custom.SystemStatusCode;
@@ -21,6 +21,6 @@ public class RestAuthenticationAccessDeniedHandler implements AccessDeniedHandle
         StringBuilder msg = new StringBuilder("请求: ");
         msg.append(httpServletRequest.getRequestURI()).append(" 权限不足，无法访问系统资源.");
         log.info(msg.toString());
-        ResultUtil.writeJavaScript(httpServletResponse, SystemStatusCode.SC_UNAUTHORIZED, msg.toString());
+        ResultUtil.writeJavaScript(httpServletResponse,HttpServletResponse.SC_UNAUTHORIZED, SystemStatusCode.SC_UNAUTHORIZED, msg.toString());
     }
 }

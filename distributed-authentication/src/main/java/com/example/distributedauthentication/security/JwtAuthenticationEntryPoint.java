@@ -29,13 +29,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
         // 用户登录时身份认证未通过
         if (e instanceof BadCredentialsException) {
             log.info("用户登录时身份认证失败.");
-            ResultUtil.writeJavaScript(httpServletResponse, SystemStatusCode.SC_UNAUTHORIZED, msg.toString());
+            ResultUtil.writeJavaScript(httpServletResponse,HttpServletResponse.SC_OK, SystemStatusCode.SC_UNAUTHORIZED, msg.toString());
         } else if (e instanceof InsufficientAuthenticationException) {
             log.info("缺少请求头参数,Authorization传递是token值所以参数是必须的.");
-            ResultUtil.writeJavaScript(httpServletResponse, SystemStatusCode.JWT_NOT_FOUND, msg.toString());
+            ResultUtil.writeJavaScript(httpServletResponse,HttpServletResponse.SC_OK, SystemStatusCode.JWT_NOT_FOUND, msg.toString());
         } else {
             log.info("用户token无效.");
-            ResultUtil.writeJavaScript(httpServletResponse, SystemStatusCode.JWT_ERROR, msg.toString());
+            ResultUtil.writeJavaScript(httpServletResponse,HttpServletResponse.SC_OK, SystemStatusCode.JWT_ERROR, msg.toString());
         }
     }
 }

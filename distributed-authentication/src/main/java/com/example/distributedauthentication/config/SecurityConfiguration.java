@@ -1,9 +1,9 @@
-package com.example.distributedauthentication.security.config;
+package com.example.distributedauthentication.config;
 
 import com.example.distributedauthentication.entity.User;
 import com.example.distributedauthentication.security.JwtAuthenticationEntryPoint;
 import com.example.distributedauthentication.security.JwtAuthenticationTokenFilter;
-import com.example.distributedauthentication.security.RestAuthenticationAccessDeniedHandler;
+import com.example.distributedauthentication.handler.RestAuthenticationAccessDeniedHandler;
 import com.example.distributedauthentication.security.SecurityUser;
 import com.example.distributedauthentication.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 @Configuration
 @EnableWebSecurity //启动web安全性
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
@@ -46,9 +46,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                             RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler,
-                             JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter) {
+    public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                                 RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler,
+                                 JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.restAuthenticationAccessDeniedHandler = restAuthenticationAccessDeniedHandler;
         this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 // 对于登录login要允许匿名访问
-                .antMatchers("/api/login/login", "/favicon.ico").permitAll()
+                .antMatchers("/api/login/login", "/api/user/createdUser", "/favicon.ico").permitAll()
                 // 访问/user 需要拥有admin权限
                 .antMatchers("/user").hasAuthority("admin")
                 .and()
