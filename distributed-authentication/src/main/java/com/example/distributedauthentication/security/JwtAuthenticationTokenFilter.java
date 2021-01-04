@@ -20,9 +20,9 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-    private String tokenHeader = "Authorization";
+    private final String tokenHeader = "Authorization";
 
-    private String authTokenStart = "Bearer";
+    private final String authTokenStart = "Bearer";
 
     @Resource
     private JwtTokenUtil jwtTokenUtil;

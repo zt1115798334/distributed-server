@@ -80,7 +80,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 除上面外的所有请求全部需要鉴权认证
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .antMatchers("/oauth/**").permitAll();
 
         // 禁用缓存
         httpSecurity.headers().cacheControl();

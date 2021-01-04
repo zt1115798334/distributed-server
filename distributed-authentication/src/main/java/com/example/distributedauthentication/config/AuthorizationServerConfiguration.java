@@ -1,6 +1,7 @@
 package com.example.distributedauthentication.config;
 
 import com.example.distributedauthentication.handler.CustomTokenEnhancer;
+import com.example.distributedauthentication.properties.JwtProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +35,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     private final AuthenticationManager authenticationManager;
 
+    private final JwtProperties jwtProperties;
+
     private final CustomTokenEnhancer customTokenEnhancer;
 
-    private static final String DEMO_RESOURCE_ID = "order";
+    private static final String DEMO_RESOURCE_ID = "api";
 
 
     // 我对于两种模式的理解便是，如果你的系统已经有了一套用户体系，每个用户也有了一定的权限，可以采用password模式
@@ -44,7 +47,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // password 持多种编码，通过密码的前缀区分编码方式
-        String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
+        String finalSecret = new BCryptPasswordEncoder().encode("123456");
         //配置两个客户端,一个用于password认证一个用于client认证
 
         //client模式，没有用户的概念，直接与认证服务器交互，用配置中的客户端信息去申请accessToken，
@@ -76,7 +79,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("123");
+        converter.setSigningKey(jwtProperties.getSecret());
         return converter;
     }
 
