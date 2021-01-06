@@ -2,7 +2,7 @@ package com.example.distributedauthentication.config;
 
 import com.example.distributedauthentication.entity.User;
 import com.example.distributedauthentication.security.JwtAuthenticationEntryPoint;
-import com.example.distributedauthentication.security.JwtAuthenticationTokenFilter;
+import com.example.distributedauthentication.security.JwtUsernamePasswordAuthenticationTokenFilter;
 import com.example.distributedauthentication.handler.RestAuthenticationAccessDeniedHandler;
 import com.example.distributedauthentication.security.SecurityUser;
 import com.example.distributedauthentication.service.UserService;
@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler;
 
-    private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    private final JwtUsernamePasswordAuthenticationTokenFilter jwtUsernamePasswordAuthenticationTokenFilter;
 
     /**
      * 解决 无法直接注入 AuthenticationManager
@@ -48,10 +48,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                                  RestAuthenticationAccessDeniedHandler restAuthenticationAccessDeniedHandler,
-                                 JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter) {
+                                 JwtUsernamePasswordAuthenticationTokenFilter jwtUsernamePasswordAuthenticationTokenFilter) {
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.restAuthenticationAccessDeniedHandler = restAuthenticationAccessDeniedHandler;
-        this.jwtAuthenticationTokenFilter = jwtAuthenticationTokenFilter;
+        this.jwtUsernamePasswordAuthenticationTokenFilter = jwtUsernamePasswordAuthenticationTokenFilter;
     }
 
 
@@ -74,19 +74,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 // 对于登录login要允许匿名访问
-                .antMatchers("/api/login/login", "/api/user/createdUser", "/favicon.ico").permitAll()
+                .antMatchers("/api/login/login","/oauth/**", "/api/user/createdUser", "/favicon.ico").permitAll()
                 // 访问/user 需要拥有admin权限
                 .antMatchers("/user").hasAuthority("admin")
                 .and()
                 .authorizeRequests()
                 // 除上面外的所有请求全部需要鉴权认证
-                .anyRequest().authenticated()
-                .antMatchers("/oauth/**").permitAll();
+                .anyRequest().authenticated();
 
         // 禁用缓存
         httpSecurity.headers().cacheControl();
         // 添加JWT filter
-        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.addFilterBefore(jwtUsernamePasswordAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired

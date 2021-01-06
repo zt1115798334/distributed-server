@@ -3,7 +3,6 @@ package com.example.distributedauthentication.config;
 import com.example.distributedauthentication.handler.CustomTokenEnhancer;
 import com.example.distributedauthentication.properties.JwtProperties;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -50,24 +49,34 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         String finalSecret = new BCryptPasswordEncoder().encode("123456");
         //配置两个客户端,一个用于password认证一个用于client认证
 
+        //授权码模式
+//        clients.inMemory()
+//                .withClient("client") //首先是client_id代表是哪个客户端也就是哪个APP或者web服务需要认证的
+//                .authorizedGrantTypes("authorization_code")
+//                .scopes("select")
+//                .secret(finalSecret) //客户端的secret秘钥需要加密
+
         //client模式，没有用户的概念，直接与认证服务器交互，用配置中的客户端信息去申请accessToken，
         // 客户端有自己的client_id,client_secret对应于用户的username,password，而客户端也拥有自己的authorities，
         // 当采取client模式认证时，对应的权限也就是客户端自己的authorities
         clients.inMemory()
-                .withClient("client_1")
+                .withClient("client")
                 .resourceIds(DEMO_RESOURCE_ID)
-                .authorizedGrantTypes("client_credentials", "refresh_token")
-                .scopes("select")
+                .authorizedGrantTypes("client_credentials", "refresh_token") //授权类型 授权码模式（authorization code）
+                // 简化模式（implicit） 密码模式（resource owner password credentials）客户端模式（client credentials）
+                .scopes("select") //范围
                 .authorities("ROLE_ADMIN")
-                .secret(finalSecret)
-
-                //password模式，自己本身有一套用户体系，在认证时需要带上自己的用户名和密码，以及客户端的client_id,client_secret
-                // 此时，accessToken所包含的权限是用户本身的权限，而不是客户端的权限
-                .and().withClient("client_2")
-                .resourceIds(DEMO_RESOURCE_ID)
-                .authorizedGrantTypes("password", "refresh_token")
-                .scopes("select")
                 .secret(finalSecret);
+
+
+        //password模式，自己本身有一套用户体系，在认证时需要带上自己的用户名和密码，以及客户端的client_id,client_secret
+        // 此时，accessToken所包含的权限是用户本身的权限，而不是客户端的权限
+//                .and().withClient("client_2")
+//                .resourceIds(DEMO_RESOURCE_ID)
+//                .authorizedGrantTypes("password", "refresh_token")
+//                .scopes("select")
+//                .secret(finalSecret)
+
     }
 
     @Bean

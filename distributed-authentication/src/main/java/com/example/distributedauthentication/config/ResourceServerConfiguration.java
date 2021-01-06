@@ -4,13 +4,13 @@ import com.example.distributedauthentication.handler.AuthExceptionEntryPoint;
 import com.example.distributedauthentication.handler.CustomAccessDeniedHandler;
 import com.example.distributedauthentication.handler.CustomTokenEnhancer;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -26,7 +26,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @AllArgsConstructor
 //@Configuration
 //@EnableResourceServer
-public class ResourceServerConfiguration  extends ResourceServerConfigurerAdapter {
+public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
     private static final String DEMO_RESOURCE_ID = "order";
 
@@ -34,7 +34,7 @@ public class ResourceServerConfiguration  extends ResourceServerConfigurerAdapte
 
     private final AuthExceptionEntryPoint authExceptionEntryPoint;
 
-   private final CustomTokenEnhancer customTokenEnhancer;
+    private final CustomTokenEnhancer customTokenEnhancer;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -42,17 +42,17 @@ public class ResourceServerConfiguration  extends ResourceServerConfigurerAdapte
                 .resourceId(DEMO_RESOURCE_ID).stateless(true)
                 .authenticationEntryPoint(authExceptionEntryPoint) // 外部定义的token错误进入的方法
                 .accessDeniedHandler(accessDeniedHandler); // 没有权限的进入方法
-
         resources.tokenServices(tokenServices());
     }
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                // 配置order访问控制，必须认证后才可以访问
-                .antMatchers("/order/**").authenticated();
+        http.
+                anonymous().disable()
+                .requestMatchers().antMatchers("/api*/**")
+                .and().authorizeRequests()
+                .antMatchers("/api/**").permitAll()
+                .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
 
     @Bean
