@@ -29,6 +29,7 @@
         <module>distributed-authentication</module>
         <module>distributed-config</module>
         <module>distributed-book</module>
+        <module>distributed-book-details</module>
     </modules>
 
     <dependencyManagement>
@@ -73,6 +74,11 @@
             <dependency>
                 <groupId>com.example</groupId>
                 <artifactId>distributed-book</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>distributed-book-details</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -151,6 +157,11 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.30</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

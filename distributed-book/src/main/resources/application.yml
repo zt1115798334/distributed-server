@@ -76,5 +76,9 @@ spring:
     props:
       sql:
         show: true # 打印 SQL
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+
 
 
