@@ -4,9 +4,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,29 +21,41 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-@Document(indexName = "book",  shards = 1, replicas = 0)
+@Document(indexName = "book", shards = 5, replicas = 1, refreshInterval = "1s", indexStoreType = "fs")
 public class BookDetails {
 
     @Id
-    private Long id;
+    private String id;
 
     @Field(type = FieldType.Keyword)
-    private String firstCode;
+    private String siteName;
 
     @Field(type = FieldType.Keyword)
-    private String secondCode;
+    private String author;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word")
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String title;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String cleanTitle;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String summary;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String content;
 
-    @Field(type = FieldType.Integer)
-    private Integer type;
+    @Field(type = FieldType.Date, format = DateFormat.basic_date_time)
+    private Date publishTime;
 
-    public BookDetails(Long id, String firstCode, String secondCode, String content, Integer type) {
+    public BookDetails(String id, String siteName, String author, String title, String cleanTitle, String summary, String content, Date publishTime) {
         this.id = id;
-        this.firstCode = firstCode;
-        this.secondCode = secondCode;
+        this.siteName = siteName;
+        this.author = author;
+        this.title = title;
+        this.cleanTitle = cleanTitle;
+        this.summary = summary;
         this.content = content;
-        this.type = type;
+        this.publishTime = publishTime;
     }
 }

@@ -24,11 +24,7 @@ public interface BookDetailsService {
 
     Iterator<BookDetails> findAll();
 
-    Page<BookDetails> findByContent(int pageNumber, int pageSize, String content);
-
-    Page<BookDetails> findByFirstCode(int pageNumber, int pageSize, String firstCode);
-
-    Page<BookDetails> findBySecondCode(int pageNumber, int pageSize, String secondCode);
+    Page<BookDetails> searchBook(int pageNumber, int pageSize, String keyword);
 
     Page<BookDetails> query(String key);
 }

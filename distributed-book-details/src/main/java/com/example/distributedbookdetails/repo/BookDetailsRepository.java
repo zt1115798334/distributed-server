@@ -15,13 +15,13 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  */
 public interface BookDetailsRepository extends ElasticsearchRepository<BookDetails, Long> {
 
-    //默认的注释
-    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"content\" : \"?\"}}}}")
-    Page<BookDetails> findByContent(String content, Pageable pageable);
-
-    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"firstCode.keyword\" : \"?\"}}}}")
-    Page<BookDetails> findByFirstCode(String firstCode, Pageable pageable);
-
-    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"secondCode.keyword\" : \"?\"}}}}")
-    Page<BookDetails> findBySecondCode(String secondCode, Pageable pageable);
+//    //默认的注释
+//    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"content\" : \"?\"}}}}")
+//    Page<BookDetails> findByContent(String content, Pageable pageable);
+//
+//    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"firstCode.keyword\" : \"?\"}}}}")
+//    Page<BookDetails> findByFirstCode(String firstCode, Pageable pageable);
+//
+//    @Query("{\"bool\" : {\"must\" : {\"field\" : {\"secondCode.keyword\" : \"?\"}}}}")
+//    Page<BookDetails> findBySecondCode(String secondCode, Pageable pageable);
 }

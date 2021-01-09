@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,7 +44,7 @@ public class BookDetailsController extends BaseController {
         JSONObject paramJo = new JSONObject();
         DateUtils.DateRange dateTimeRange = DateUtils.findDateTimeRange(SysConst.TimeType.MONTH.getType());
         int pageNumber = 1;
-        int pageSize = 10;
+        int pageSize = 100;
         paramJo.putAll(EsParamsUtils.getQueryExternalParams(
                 SysConst.SOURCE_ALL,
                 SysConst.SOURCE_ALL_LIST,
@@ -53,34 +55,37 @@ public class BookDetailsController extends BaseController {
                 Collections.singletonList("tradition"),
                 SysConst.ReadState.ALL.getCode(), false));
         EsPage<EsArticle> articleEsPage = esArticleService.findAllDataEsArticlePage(paramJo,
-                pageNumber, pageSize, 1l,
+                pageNumber, pageSize, 1L,
                 true);
+        saveArticle(articleEsPage.getList());
         Long totalElements = articleEsPage.getTotalElements();
         System.out.println("totalElements = " + totalElements);
-//        for (int i = 2; i < articleEsPage.getTotalElements() / 10; i++) {
-//            articleEsPage = esArticleService.findAllDataEsArticlePage(paramJo,
-//                    i++, pageSize, 1l,
-//                    true);
-//        }
-
-//
-//        Random random = new Random();
-//        bookDetailsService.createIndex();
-//        List<BookDetails> list = LongStream.rangeClosed(1, 10000)
-//                .boxed()
-//                .map(i -> new BookDetails(i, "xx" + random.nextInt(), "xx" + random.nextInt(), "ddd", 1))
-//                .collect(Collectors.toList());
-//        bookDetailsService.saveAll(list);
+        for (int i = 2; i < articleEsPage.getTotalElements() / 10; i++) {
+            articleEsPage = esArticleService.findAllDataEsArticlePage(paramJo,
+                    i++, pageSize, 1L,
+                    true);
+            saveArticle(articleEsPage.getList());
+        }
         return success();
     }
 
+
+    private void saveArticle(List<EsArticle> esArticles) {
+        List<BookDetails> bookDetails = esArticles.parallelStream()
+                .map(esArticle -> new BookDetails(esArticle.getId(), esArticle.getSiteName(),
+                        esArticle.getAuthor(), esArticle.getTitle(),
+                        esArticle.getCleanTitle(), esArticle.getSummary(), esArticle.getContent(),
+                        DateUtils.localDateTimeToDate(esArticle.getPublishTime())))
+                .collect(Collectors.toList());
+        bookDetailsService.saveAll(bookDetails);
+
+    }
     @PostMapping("searchBook")
     public ResultMessage searchBook(@RequestParam(defaultValue = "") String keyword,
                                     @RequestParam(defaultValue = "1") Integer pageNumber,
                                     @RequestParam(defaultValue = "10") Integer pageSize) {
-        Page<BookDetails> detailsPage = bookDetailsService.findByContent(pageNumber, pageSize, keyword);
+        Page<BookDetails> detailsPage = bookDetailsService.searchBook(pageNumber, pageSize, keyword);
         return success(pageNumber, pageSize, detailsPage.getTotalElements(), detailsPage.toList());
     }
-
 
 }
