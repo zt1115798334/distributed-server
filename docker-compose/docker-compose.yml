@@ -10,6 +10,17 @@ services:
     container_name: nacos-server
     ports:
       - '8848:8848'
+
+  dic:
+    container_name: dic
+    image: nginx
+    ports:
+      - '8989:8989'
+    volumes:
+      - .\config\zdy.conf:/etc/nginx/conf.d/zdy.conf
+      - .\dic:/usr/share/nginx/dic
+    networks:
+      - elastic
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.1
     container_name: kibana
@@ -42,6 +53,7 @@ services:
         hard: -1
     volumes:
       - data01:/usr/share/elasticsearch/data
+      - .\plugins:/usr/share/elasticsearch/plugins
     ports:
       - 9200:9200
     networks:
@@ -62,6 +74,7 @@ services:
         hard: -1
     volumes:
       - data02:/usr/share/elasticsearch/data
+      - .\plugins:/usr/share/elasticsearch/plugins
     networks:
       - elastic
 
