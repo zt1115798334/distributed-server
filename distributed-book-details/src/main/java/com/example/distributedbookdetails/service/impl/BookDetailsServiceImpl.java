@@ -11,6 +11,9 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -78,10 +81,13 @@ public class BookDetailsServiceImpl implements BookDetailsService {
                 .should(QueryBuilders.wildcardQuery("cleanTitle.keyword", "*" + keyword + "*"))
         );
 
+        FieldSortBuilder sort = SortBuilders.fieldSort("publishTime").order(SortOrder.DESC);
+
         NativeSearchQuery build = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
                 .withSearchType(SearchType.DEFAULT)
                 .withPageable(pageRequest)//加折叠和分页
+                .withSort(sort)
                 .build();
 
 
