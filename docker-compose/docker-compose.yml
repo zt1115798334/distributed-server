@@ -21,6 +21,10 @@ services:
       - .\dic:/usr/share/nginx/dic
     networks:
       - elastic
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.1
     container_name: kibana
