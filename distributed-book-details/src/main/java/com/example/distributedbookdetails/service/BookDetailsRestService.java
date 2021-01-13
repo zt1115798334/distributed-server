@@ -1,6 +1,7 @@
 package com.example.distributedbookdetails.service;
 
 import com.example.distributedbookdetails.entity.BookDetails;
+import com.example.distributedbookdetails.entity.BookDetailsRest;
 import org.elasticsearch.client.security.user.User;
 
 import java.util.List;
@@ -39,11 +40,10 @@ public interface BookDetailsRestService {
     /**
      * 新增文档
      *
-     * @param index 索引
-     * @param id id
-     * @param content 文档
+     * @param index   索引
+     * @param bookDetailsRest      bookDetailsRest
      */
-    boolean addDocument(String index, String id, String content) throws Exception;
+    boolean addBookDetails(String index, BookDetailsRest bookDetailsRest) throws Exception;
 
     /**
      * 判断是否存在文档
@@ -51,7 +51,7 @@ public interface BookDetailsRestService {
      * @param index 索引
      * @param id id
      */
-    boolean isExistsDocument(String index, String id) throws Exception;
+    boolean isExistsBookDetailsRest(String index, String id) throws Exception;
 
     /**
      * 获取文档
@@ -59,16 +59,16 @@ public interface BookDetailsRestService {
      * @param index 索引
      * @param id id
      */
-    String getDocument(String index, String id) throws Exception;
+    BookDetailsRest getBookDetailsRest(String index, String id) throws Exception;
 
     /**
      * 更新文档
      *
      * @param index 索引
      * @param id id
-     * @param content 内容
+     * @param bookDetailsRest bookDetailsRest
      */
-    boolean updateDocument(String index, String id, String content) throws Exception;
+    boolean updateBookDetailsRest(String index, String id, BookDetailsRest bookDetailsRest) throws Exception;
 
     /**
      * 删除文档
@@ -76,7 +76,7 @@ public interface BookDetailsRestService {
      * @param index 索引
      * @param id id
      */
-    boolean deleteDocument(String index, String id) throws Exception;
+    boolean deleteBookDetailsRest(String index, String id) throws Exception;
 
     /**
      * 批量插入
@@ -84,7 +84,7 @@ public interface BookDetailsRestService {
      * @param index 索引
      * @param bookDetailsList 文章集合
      */
-    boolean bulkRequest(String index, List<BookDetails> bookDetailsList) throws Exception;
+    boolean bulkBookDetailsRest(String index, List<BookDetailsRest> bookDetailsList) throws Exception;
 
     /**
      * 搜索请求
@@ -99,5 +99,5 @@ public interface BookDetailsRestService {
      *
      * @param index index
      */
-    List<Integer> searchAllRequest(String index) throws Exception;
+    List<String> searchAllRequest(String index) throws Exception;
 }

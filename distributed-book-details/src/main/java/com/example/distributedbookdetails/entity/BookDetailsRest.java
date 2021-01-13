@@ -1,5 +1,8 @@
 package com.example.distributedbookdetails.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.example.distributedcommon.utils.DateUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -21,34 +24,26 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-@Document(indexName = "book_details", shards = 5, replicas = 1, refreshInterval = "1s", indexStoreType = "fs")
-public class BookDetails {
+public class BookDetailsRest {
 
-    @Id
     private String id;
 
-    @Field(type = FieldType.Keyword)
     private String siteName;
 
-    @Field(type = FieldType.Keyword)
     private String author;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String title;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String cleanTitle;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String summary;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String content;
 
-    @Field(type = FieldType.Date, format = DateFormat.basic_date_time)
+    @JSONField(format = DateUtils.GREENWICH_DATE_FORMAT_3)
     private Date publishTime;
 
-    public BookDetails(String id, String siteName, String author, String title, String cleanTitle, String summary, String content, Date publishTime) {
+    public BookDetailsRest(String id, String siteName, String author, String title, String cleanTitle, String summary, String content, Date publishTime) {
         this.id = id;
         this.siteName = siteName;
         this.author = author;

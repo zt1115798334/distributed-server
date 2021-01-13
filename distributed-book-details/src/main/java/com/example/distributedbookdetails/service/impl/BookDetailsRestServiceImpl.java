@@ -1,7 +1,9 @@
 package com.example.distributedbookdetails.service.impl;
 
-import com.example.distributedbookdetails.entity.BookDetails;
+import com.alibaba.fastjson.JSONObject;
+import com.example.distributedbookdetails.entity.BookDetailsRest;
 import com.example.distributedbookdetails.service.BookDetailsRestService;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +26,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -33,6 +36,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.springframework.data.elasticsearch.core.ResourceUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -62,6 +66,9 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
         }
         // 创建索引
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+        createIndexRequest.settings(Settings.builder().put("number_of_shards",5).
+                put("number_of_replicas",1));
+        createIndexRequest.mapping(ResourceUtil.readFileFromClasspath("bookDetails.json"),XContentType.JSON);
         CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
         return createIndexResponse.isAcknowledged();
     }
@@ -88,24 +95,25 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
 
 
     @Override
-    public boolean addDocument(String index, String id, String content) throws Exception {
+    public boolean addBookDetails(String index, BookDetailsRest bookDetailsRest) throws Exception {
         if (!this.createIndex(index)) {
             return false;
         }
 
         IndexRequest indexRequest = new IndexRequest(index);
         // 设置超时时间
-        indexRequest.id(id);
+        indexRequest.id(bookDetailsRest.getId());
         indexRequest.timeout(TimeValue.timeValueSeconds(1));
         // 转换为json字符串
-        indexRequest.source(content, XContentType.JSON);
+        System.out.println(JSONObject.toJSONString(bookDetailsRest));
+        indexRequest.source(JSONObject.toJSONString(bookDetailsRest), XContentType.JSON);
         IndexResponse indexResponse = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
         return indexResponse.status().getStatus() == 200;
     }
 
 
     @Override
-    public boolean isExistsDocument(String index, String id) throws Exception {
+    public boolean isExistsBookDetailsRest(String index, String id) throws Exception {
         // 判断是否存在文档
         GetRequest getRequest = new GetRequest(index, id);
         // 不获取返回的_source的上下文
@@ -116,28 +124,29 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
 
 
     @Override
-    public String getDocument(String index, String id) throws Exception {
+    public BookDetailsRest getBookDetailsRest(String index, String id) throws Exception {
         // 获取文档
         GetRequest getRequest = new GetRequest(index, id);
         GetResponse getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
-        return getResponse.getSourceAsString();
+        String sourceAsString = getResponse.getSourceAsString();
+        return JSONObject.toJavaObject(JSONObject.parseObject(sourceAsString), BookDetailsRest.class);
     }
 
 
     @Override
-    public boolean updateDocument(String index, String id, String content) throws Exception {
+    public boolean updateBookDetailsRest(String index, String id, BookDetailsRest bookDetailsRest) throws Exception {
         // 更新文档
         UpdateRequest updateRequest = new UpdateRequest(index, id);
         updateRequest.timeout(TimeValue.timeValueSeconds(1));
-        updateRequest.doc(content, XContentType.JSON);
+        updateRequest.doc(JSONObject.toJSONString(bookDetailsRest), XContentType.JSON);
         UpdateResponse updateResponse = restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
         return updateResponse.status().getStatus() == 200;
     }
 
 
     @Override
-    public boolean deleteDocument(String index, String id) throws Exception {
-        if (!this.isExistsDocument(index, id)) {
+    public boolean deleteBookDetailsRest(String index, String id) throws Exception {
+        if (!this.isExistsBookDetailsRest(index, id)) {
             return true;
         }
 
@@ -150,19 +159,16 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
 
 
     @Override
-    public boolean bulkRequest(String index, List<BookDetails> bookDetailsList) throws Exception {
+    public boolean bulkBookDetailsRest(String index, List<BookDetailsRest> bookDetailsList) throws Exception {
         // 批量插入
-//        BulkRequest bulkRequest = new BulkRequest();
-//        bulkRequest.timeout(TimeValue.timeValueSeconds(1));
-//        bookDetailsList.forEach(x -> {
-//            bulkRequest.add(
-//                    new IndexRequest(index)
-//                            .id(x.getId().toString())
-//                            .source(JsonUtils.objectToJson(x), XContentType.JSON));
-//        });
-//        BulkResponse bulkItemResponse = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-//        return !bulkItemResponse.hasFailures();
-        return true;
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.timeout(TimeValue.timeValueSeconds(1));
+        bookDetailsList.forEach(x -> bulkRequest.add(
+                new IndexRequest(index)
+                        .id(x.getId())
+                        .source(JSONObject.toJSONString(x), XContentType.JSON)));
+        BulkResponse bulkItemResponse = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        return !bulkItemResponse.hasFailures();
     }
 
 
@@ -192,7 +198,7 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
         // 匹配所有
 //        QueryBuilders.matchAllQuery();
         // 最细粒度划分：ik_max_word，最粗粒度划分：ik_smart
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, "name", "description").analyzer("ik_max_word"));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, "content", "cleanTitle").analyzer("ik_max_word"));
 //        searchSourceBuilder.query(QueryBuilders.matchQuery("content", keyWord));
         searchSourceBuilder.timeout(TimeValue.timeValueSeconds(10));
 
@@ -203,26 +209,26 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
         List<Map<String, Object>> results = new ArrayList<>();
         for (SearchHit searchHit : searchResponse.getHits().getHits()) {
             Map<String, HighlightField> highlightFieldMap = searchHit.getHighlightFields();
-            HighlightField title = highlightFieldMap.get("name");
-            HighlightField description = highlightFieldMap.get("description");
+            HighlightField content = highlightFieldMap.get("content");
+            HighlightField cleanTitle = highlightFieldMap.get("cleanTitle");
             // 原来的结果
             Map<String, Object> sourceMap = searchHit.getSourceAsMap();
             // 解析高亮字段，替换掉原来的字段
-            if (title != null) {
-                Text[] fragments = title.getFragments();
+            if (content != null) {
+                Text[] fragments = content.getFragments();
                 StringBuilder n_title = new StringBuilder();
                 for (Text text : fragments) {
                     n_title.append(text);
                 }
-                sourceMap.put("name", n_title.toString());
+                sourceMap.put("content", n_title.toString());
             }
-            if (description != null) {
-                Text[] fragments = description.getFragments();
+            if (cleanTitle != null) {
+                Text[] fragments = cleanTitle.getFragments();
                 StringBuilder n_description = new StringBuilder();
                 for (Text text : fragments) {
                     n_description.append(text);
                 }
-                sourceMap.put("description", n_description.toString());
+                sourceMap.put("cleanTitle", n_description.toString());
             }
             results.add(sourceMap);
         }
@@ -231,7 +237,7 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
 
 
     @Override
-    public List<Integer> searchAllRequest(String index) throws Exception {
+    public List<String> searchAllRequest(String index) throws Exception {
         // 搜索请求
         SearchRequest searchRequest;
         if (StringUtils.isEmpty(index)) {
@@ -253,9 +259,10 @@ public class BookDetailsRestServiceImpl implements BookDetailsRestService {
 
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 
-        List<Integer> results = new ArrayList<>();
+        List<String> results = Lists.newArrayList();
+
         for (SearchHit searchHit : searchResponse.getHits().getHits()) {
-            results.add(Integer.valueOf(searchHit.getId()));
+            results.add(searchHit.getId());
         }
         return results;
     }

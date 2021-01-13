@@ -48,6 +48,7 @@ public class DateUtils {
     public static final String GREENWICH_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static final String GREENWICH_DATE_FORMAT_2 = "yyyy-MM-dd HH:mm:ss.S";
+    public static final String GREENWICH_DATE_FORMAT_3 = "yyyy-MM-dd'T'HH:mm:ss";
     public static final String DATE_TIME_CS = "yyyy年MM月dd日 HH:mm:ss";
 
     public static final String TIME_FORMAT = "HH:mm";
