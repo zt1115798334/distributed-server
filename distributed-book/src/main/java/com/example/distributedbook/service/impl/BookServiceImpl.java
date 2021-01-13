@@ -53,7 +53,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book saveBooK(Long userId, VoBook voBook) {
+    public Book saveBooK(Long userId, String bookId, VoBook voBook) {
         Book book = DtoUtils.changeBook(voBook);
         book.setUserId(userId);
         return this.save(book);

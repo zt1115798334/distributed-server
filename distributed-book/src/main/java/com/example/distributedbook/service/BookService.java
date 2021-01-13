@@ -14,5 +14,5 @@ import com.example.distributedcommondatasource.service.BaseService;
  */
 public interface BookService extends BaseService<Book, Long, Long> {
 
-    Book saveBooK(Long userId, VoBook voBook);
+    Book saveBooK(Long userId,String bookId, VoBook voBook);
 }

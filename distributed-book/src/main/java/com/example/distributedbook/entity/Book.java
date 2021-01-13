@@ -31,6 +31,10 @@ public class Book  {
 	/**
 	*
 	*/
+	private String bookId;
+	/**
+	*
+	*/
 	private String bookName;
 	/**
 	* 用户id

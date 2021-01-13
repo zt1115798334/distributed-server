@@ -1,6 +1,7 @@
 package com.example.distributedbook.controller;
 
 import com.example.distributedbook.service.BookService;
+import com.example.distributedbook.service.external.BookDetailsService;
 import com.example.distributedbook.service.external.UserService;
 import com.example.distributedcommon.base.BaseController;
 import com.example.distributedcommon.base.ResultMessage;
@@ -31,17 +32,20 @@ public class BookController extends BaseController {
 
     private final UserService userService;
 
+    private final BookDetailsService bookDetailsService;
+
     @PostMapping("saveBook")
 //    public ResultMessage saveBook(@RequestBody VoBook voBook) {
     public ResultMessage saveBook(@RequestParam String bookName) {
         Random random = new Random();
         List<UserDto> userDtoList = userService.findAllUser();
+        List<String> bookIds = bookDetailsService.searchAllRequest();
         for (UserDto userDto : userDtoList) {
             new Thread(() -> {
-                for (long i = 1L; i <= 100L; i++) {
+                for (String bookId : bookIds) {
                     VoBook voBook = new VoBook();
                     voBook.setBookName(bookName + random.nextInt());
-                    bookService.saveBooK(userDto.getId(), voBook);
+                    bookService.saveBooK(userDto.getId(), bookId, voBook);
                 }
             }).start();
         }

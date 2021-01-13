@@ -74,7 +74,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 // 对于登录login要允许匿名访问
-                .antMatchers("/api/login/login","/oauth/**", "/api/user/createdUser", "/favicon.ico").permitAll()
+                .antMatchers("/api/login/login","/oauth/**", "/api/user/createdUser","/api/user/findAllUser", "/favicon.ico").permitAll()
                 // 访问/user 需要拥有admin权限
                 .antMatchers("/user").hasAuthority("admin")
                 .and()

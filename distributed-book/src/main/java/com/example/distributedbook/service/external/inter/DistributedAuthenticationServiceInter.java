@@ -1,4 +1,4 @@
-package com.example.distributedbook.service.external;
+package com.example.distributedbook.service.external.inter;
 
 import com.example.distributedcommon.base.ResultMessage;
 import com.example.distributedcommondatasource.entity.dto.UserDto;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @FeignClient(value = "service-distributed-authentication")
-public interface DistributedAuthenticationService {
+public interface DistributedAuthenticationServiceInter {
 
     @GetMapping(value = "api/user/findAllUser")
     ResultMessage findAllUser();
