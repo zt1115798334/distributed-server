@@ -10,7 +10,6 @@ services:
     container_name: nacos-server
     ports:
       - '8848:8848'
-
   dic:
     container_name: dic
     image: nginx
