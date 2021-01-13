@@ -2,7 +2,7 @@ package com.example.distributedauthentication.controller;
 
 import com.example.distributedauthentication.bo.ResponseUserToken;
 import com.example.distributedauthentication.service.LoginService;
-import com.example.distributedcommon.base.BaseController;
+import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RequestMapping("api/login")
 @RestController
-public class LoginController extends BaseController {
+public class LoginController extends BaseResultMessage {
 
 
     private final LoginService loginService;

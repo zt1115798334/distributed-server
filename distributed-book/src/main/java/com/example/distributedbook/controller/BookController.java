@@ -1,12 +1,14 @@
 package com.example.distributedbook.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.distributedbook.service.BookService;
-import com.example.distributedbook.service.external.BookDetailsService;
-import com.example.distributedbook.service.external.UserService;
-import com.example.distributedcommon.base.BaseController;
+import com.example.distributedbook.service.external.ExternalService;
+import com.example.distributedbook.service.external.service.BookDetailsService;
+import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
 import com.example.distributedcommon.vo.VoBook;
 import com.example.distributedcommondatasource.entity.dto.UserDto;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +28,11 @@ import java.util.Random;
 @AllArgsConstructor
 @RequestMapping("api/book")
 @RestController
-public class BookController extends BaseController {
+public class BookController extends BaseResultMessage {
 
     private final BookService bookService;
 
-    private final UserService userService;
+    private final ExternalService externalService;
 
     private final BookDetailsService bookDetailsService;
 
@@ -38,8 +40,8 @@ public class BookController extends BaseController {
 //    public ResultMessage saveBook(@RequestBody VoBook voBook) {
     public ResultMessage saveBook(@RequestParam String bookName) {
         Random random = new Random();
-        List<UserDto> userDtoList = userService.findAllUser();
-        List<String> bookIds = bookDetailsService.searchAllRequest();
+        List<UserDto> userDtoList = externalService.findAllUser();
+        List<String> bookIds = externalService.searchAllRequest();
         for (UserDto userDto : userDtoList) {
             new Thread(() -> {
                 for (String bookId : bookIds) {
@@ -51,4 +53,33 @@ public class BookController extends BaseController {
         }
         return success();
     }
+
+    @PostMapping("test1")
+//    public ResultMessage saveBook(@RequestBody VoBook voBook) {
+    public ResultMessage test1() {
+
+        JSONObject pp = new JSONObject();
+        pp.put("ddd", "dd");
+        return success(pp);
+    }
+
+    @PostMapping("test2")
+//    public ResultMessage saveBook(@RequestBody VoBook voBook) {
+    public ResultMessage test2() {
+        List<JSONObject> list = Lists.newArrayList();
+        JSONObject pp = new JSONObject();
+        pp.put("ddd", "dd");
+        list.add(pp);
+        return success(1, 10, 100, list);
+    }
+    @PostMapping("test3")
+//    public ResultMessage saveBook(@RequestBody VoBook voBook) {
+    public ResultMessage test3() {
+        List<JSONObject> list = Lists.newArrayList();
+        JSONObject pp = new JSONObject();
+        pp.put("ddd", "dd");
+        list.add(pp);
+        return success(list);
+    }
+
 }

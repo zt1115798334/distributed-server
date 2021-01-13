@@ -5,7 +5,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
+import com.example.distributedcommon.custom.SystemStatusCode;
 import com.example.distributedcommon.utils.DateUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.Collections;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,23 +23,46 @@ import com.example.distributedcommon.utils.DateUtils;
  * date: 2018/12/18 18:27
  * description: 前后端统一消息定义协议 Message 之后前后端数据交互都按照规定的类型进行交互
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResultMessage {
+
+    private final SystemStatusCode SUCCESS = SystemStatusCode.SUCCESS;
+    private final SystemStatusCode FAILED = SystemStatusCode.FAILED;
     // 消息头meta 存放状态信息 code message
-    private JSONObject meta = new JSONObject();
+
+    @JsonInclude(Include.NON_NULL)
+    private Meta meta;
     // 消息内容  存储实体交互数据
-    private JSONObject data = new JSONObject();
+    @JsonInclude(Include.NON_NULL)
+    private PageData page;
 
-    public JSONObject getMeta() {
-        return meta;
-    }
+    @JsonInclude(Include.NON_NULL)
+    private JSONObject data;
 
-    public ResultMessage setMeta(JSONObject meta) {
+    @JsonInclude(Include.NON_NULL)
+    private JSONArray list;
+
+    public ResultMessage setMeta(Meta meta) {
         this.meta = meta;
         return this;
     }
 
-    public JSONObject getData() {
-        return data;
+    public Meta getMeta() {
+        return this.meta;
+    }
+
+    public ResultMessage setPageData(PageData page) {
+        this.page = page;
+        return this;
+    }
+
+    public PageData getPage() {
+        return this.page;
+    }
+
+    public JSONArray findPageDataList() {
+        PageData pageData = this.page;
+        return pageData != null ? JSONArray.parseArray(JSONArray.toJSONString(pageData.getList())) : new JSONArray();
     }
 
     public ResultMessage setData(Object data) {
@@ -39,49 +71,76 @@ public class ResultMessage {
             this.data = TypeUtils.castToJavaBean(data,JSONObject.class);
         }
         if (data instanceof JSONArray) {
-            JSONObject list = new JSONObject();
-            list.put("list", data);
-            this.data = list;
+            this.list = TypeUtils.castToJavaBean(data,JSONArray.class);
         }
         return this;
     }
 
-    public void addMeta(String key, Object object) {
-        this.meta.put(key, object);
+    public Object getData() {
+        return data;
     }
 
-    public ResultMessage addData(String key, Object object) {
-        this.data.put(key, object);
-        return this;
+    public JSONArray getList() {
+        return list;
     }
 
-    public ResultMessage ok(int statusCode) {
-        this.addMeta("success", Boolean.TRUE);
-        this.addMeta("code", statusCode);
-        this.addMeta("timestamp", DateUtils.formatDateTime(DateUtils.currentDateTime()));
-        return this;
+    public ResultMessage correctness() {
+        Meta build = Meta.builder().success(Boolean.TRUE).code(SUCCESS.getCode()).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).build();
+        return this.setMeta(build);
     }
 
-    public ResultMessage ok(int statusCode, String statusMsg) {
-        this.addMeta("success", Boolean.TRUE);
-        this.addMeta("code", statusCode);
-        this.addMeta("timestamp", DateUtils.formatDateTime(DateUtils.currentDateTime()));
-        this.addMeta("msg", statusMsg);
-        return this;
+    public ResultMessage correctness(String statusMsg) {
+        Meta build = Meta.builder().success(Boolean.TRUE).code(SUCCESS.getCode()).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).msg(statusMsg).build();
+        return this.setMeta(build);
+    }
+
+    public ResultMessage correctnessPage(int pageNumber, int pageSize, long total, Object rows) {
+        PageData build = PageData.builder().pageNumber(pageNumber).pageSize(pageSize).total(total).list(rows).build();
+        return this.correctness().setPageData(build);
+    }
+
+    public ResultMessage error() {
+        Meta build = Meta.builder().success(Boolean.FALSE).code(FAILED.getCode()).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).build();
+        return this.setMeta(build);
     }
 
     public ResultMessage error(int statusCode) {
-        this.addMeta("success", Boolean.FALSE);
-        this.addMeta("code", statusCode);
-        this.addMeta("timestamp", DateUtils.formatDateTime(DateUtils.currentDateTime()));
-        return this;
+        Meta build = Meta.builder().success(Boolean.FALSE).code(statusCode).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).build();
+        return this.setMeta(build);
+    }
+
+    public ResultMessage error(String statusMsg) {
+        Meta build = Meta.builder().success(Boolean.FALSE).code(FAILED.getCode()).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).msg(statusMsg).build();
+        return this.setMeta(build);
     }
 
     public ResultMessage error(int statusCode, String statusMsg) {
-        this.addMeta("success", Boolean.FALSE);
-        this.addMeta("code", statusCode);
-        this.addMeta("timestamp", DateUtils.formatDateTime(DateUtils.currentDateTime()));
-        this.addMeta("msg", statusMsg);
-        return this;
+        Meta build = Meta.builder().success(Boolean.FALSE).code(statusCode).timestamp(DateUtils.formatDateTime(DateUtils.currentDateTime())).msg(statusMsg).build();
+        return this.setMeta(build);
+    }
+
+    public ResultMessage errorPage() {
+        PageData build = PageData.builder().pageNumber(0).pageSize(0).total(0).list(Collections.EMPTY_LIST).build();
+        return this.error().setPageData(build);
+    }
+
+    @Getter
+    @Builder()
+    @JsonIgnoreProperties
+    public static class Meta {
+        private final boolean success;
+        private final int code;
+        private final String timestamp;
+        private final String msg;
+    }
+
+    @Getter
+    @Builder()
+    @JsonIgnoreProperties
+    public static class PageData {
+        private final int pageNumber;
+        private final int pageSize;
+        private final long total;
+        private final Object list;
     }
 }

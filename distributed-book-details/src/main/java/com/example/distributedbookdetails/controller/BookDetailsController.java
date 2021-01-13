@@ -8,7 +8,7 @@ import com.example.distributedbookdetails.externalService.domain.EsPage;
 import com.example.distributedbookdetails.externalService.service.EsArticleService;
 import com.example.distributedbookdetails.externalService.utils.EsParamsUtils;
 import com.example.distributedbookdetails.service.BookDetailsService;
-import com.example.distributedcommon.base.BaseController;
+import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
 import com.example.distributedcommon.utils.DateUtils;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @RequestMapping("api/bookDetails")
 @RestController
-public class BookDetailsController extends BaseController {
+public class BookDetailsController extends BaseResultMessage {
 
     private final BookDetailsService bookDetailsService;
 

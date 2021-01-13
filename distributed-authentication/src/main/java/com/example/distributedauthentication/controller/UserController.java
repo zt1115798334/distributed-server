@@ -3,7 +3,7 @@ package com.example.distributedauthentication.controller;
 import com.example.distributedauthentication.entity.User;
 import com.example.distributedauthentication.service.UserService;
 import com.example.distributedauthentication.utils.DtoUserUtils;
-import com.example.distributedcommon.base.BaseController;
+import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import java.util.Random;
 @AllArgsConstructor
 @RequestMapping("api/user")
 @RestController
-public class UserController extends BaseController {
+public class UserController extends BaseResultMessage {
 
     private final UserService userService;
 

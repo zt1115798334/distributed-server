@@ -5,7 +5,7 @@ services:
     container_name: seata-server
     ports:
       - '8091:8091'
-  nacos:
+  nacos-server:
     image: nacos/nacos-server
     container_name: nacos-server
     ports:

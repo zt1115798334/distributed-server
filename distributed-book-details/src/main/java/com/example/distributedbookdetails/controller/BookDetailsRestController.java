@@ -1,7 +1,6 @@
 package com.example.distributedbookdetails.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.distributedbookdetails.entity.BookDetails;
 import com.example.distributedbookdetails.entity.BookDetailsRest;
 import com.example.distributedbookdetails.externalService.custom.SysConst;
 import com.example.distributedbookdetails.externalService.domain.EsArticle;
@@ -9,12 +8,10 @@ import com.example.distributedbookdetails.externalService.domain.EsPage;
 import com.example.distributedbookdetails.externalService.service.EsArticleService;
 import com.example.distributedbookdetails.externalService.utils.EsParamsUtils;
 import com.example.distributedbookdetails.service.BookDetailsRestService;
-import com.example.distributedbookdetails.service.BookDetailsService;
-import com.example.distributedcommon.base.BaseController;
+import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
 import com.example.distributedcommon.utils.DateUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,7 +32,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @RequestMapping("api/bookDetailsRest")
 @RestController
-public class BookDetailsRestController extends BaseController {
+public class BookDetailsRestController extends BaseResultMessage {
 
     private final BookDetailsRestService bookDetailsRestService;
 
