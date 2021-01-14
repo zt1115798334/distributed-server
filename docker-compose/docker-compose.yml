@@ -11,13 +11,11 @@ services:
     ports:
       - '8848:8848'
   mysql-zipkin:
-#    image: mysql:5.7.32
     image: registry.cn-hangzhou.aliyuncs.com/zt_images/mysql-zipkin:latest
     container_name: mysql-zipkin
     ports:
       - '3307:3306'
     environment:
-      MYSQL_DATABASE: zipkin
       MYSQL_USER: zipkin
       MYSQL_PASSWORD: zipkin
       MYSQL_ROOT_PASSWORD: root
