@@ -41,16 +41,17 @@ public class BookController extends BaseResultMessage {
     public ResultMessage saveBook(@RequestParam String bookName) {
         Random random = new Random();
         List<UserDto> userDtoList = externalService.findAllUser();
-        List<String> bookIds = externalService.searchAllRequest();
-        for (UserDto userDto : userDtoList) {
-            new Thread(() -> {
-                for (String bookId : bookIds) {
-                    VoBook voBook = new VoBook();
-                    voBook.setBookName(bookName + random.nextInt());
-                    bookService.saveBooK(userDto.getId(), bookId, voBook);
-                }
-            }).start();
-        }
+        System.out.println("userDtoList = " + userDtoList);
+//        List<String> bookIds = externalService.searchAllRequest();
+//        for (UserDto userDto : userDtoList) {
+//            new Thread(() -> {
+//                for (String bookId : bookIds) {
+//                    VoBook voBook = new VoBook();
+//                    voBook.setBookName(bookName + random.nextInt());
+//                    bookService.saveBooK(userDto.getId(), bookId, voBook);
+//                }
+//            }).start();
+//        }
         return success();
     }
 

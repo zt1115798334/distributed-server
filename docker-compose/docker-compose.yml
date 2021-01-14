@@ -10,6 +10,46 @@ services:
     container_name: nacos-server
     ports:
       - '8848:8848'
+  mysql-zipkin:
+#    image: mysql:5.7.32
+    image: registry.cn-hangzhou.aliyuncs.com/zt_images/mysql-zipkin:latest
+    container_name: mysql-zipkin
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_DATABASE: zipkin
+      MYSQL_USER: zipkin
+      MYSQL_PASSWORD: zipkin
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .\mysql-server\db:/var/lib/mysql
+    networks:
+      - zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    environment:
+      - STORAGE_TYPE=mysql
+      # Point the zipkin at the storage backend
+      - MYSQL_DB=zipkin
+      - MYSQL_USER=zipkin
+      - MYSQL_PASS=zipkin
+      - MYSQL_HOST=mysql-zipkin
+      - MYSQL_TCP_PORT=3306
+      # Uncomment to enable scribe
+      # - SCRIBE_ENABLED=true
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to enable debug logging
+      # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG -Dlogging.level.zipkin2=DEBUG
+    networks:
+      - zipkin
+    ports:
+      # Port used for the Zipkin UI and HTTP Api
+      - 9411:9411
+    depends_on:
+      - mysql-zipkin
+
   dic:
     container_name: dic
     image: nginx
@@ -89,4 +129,6 @@ volumes:
 
 networks:
   elastic:
+    driver: bridge
+  zipkin:
     driver: bridge

@@ -24,7 +24,7 @@ public class ExternalServiceImpl implements ExternalService {
         ResultMessage resultMessage = distributedAuthenticationService.findAllUser();
         ResultMessage.Meta meta = resultMessage.getMeta();
         if (meta.isSuccess()) {
-            return resultMessage.findPageDataList().toJavaList(UserDto.class);
+            return resultMessage.getList().toJavaList(UserDto.class);
         } else {
             throw new OperationException(meta.getMsg());
         }
