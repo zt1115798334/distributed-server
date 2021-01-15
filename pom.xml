@@ -29,6 +29,7 @@
         <module>distributed-common-cache</module>
         <module>distributed-authentication</module>
         <module>distributed-config</module>
+        <module>distributed-config-client</module>
         <module>distributed-book</module>
         <module>distributed-book-details</module>
     </modules>
@@ -75,6 +76,11 @@
             <dependency>
                 <groupId>com.example</groupId>
                 <artifactId>distributed-config</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>distributed-config-client</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>

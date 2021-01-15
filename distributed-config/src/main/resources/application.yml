@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: service-distributed-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/zt1115798334/distributed-config.git # 配置git仓库的地址
+          search-paths: respo # git仓库地址下的相对地址，可以配置多个，用,分割。
+    bus:
+      enabled: true
+      trace:
+        enabled: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: distributed
+server:
+  port: 8769
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: service-distributed-config
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 2
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
+
+

@@ -1,6 +1,7 @@
 package com.example.distributedbook.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.distributedbook.entity.Book;
 import com.example.distributedbook.service.BookService;
 import com.example.distributedbook.service.external.ExternalService;
 import com.example.distributedbook.service.external.service.BookDetailsService;
@@ -10,6 +11,7 @@ import com.example.distributedcommon.vo.VoBook;
 import com.example.distributedcommondatasource.entity.dto.UserDto;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,10 +40,12 @@ public class BookController extends BaseResultMessage {
 
     @PostMapping("saveBook")
 //    public ResultMessage saveBook(@RequestBody VoBook voBook) {
-    public ResultMessage saveBook(@RequestParam String bookName) {
+    public ResultMessage saveBook(@RequestParam(defaultValue = "") String bookName) {
         Random random = new Random();
-        List<UserDto> userDtoList = externalService.findAllUser();
-        System.out.println("userDtoList = " + userDtoList);
+        List<Book> bookAll = bookService.findBookAll();
+        System.out.println("bookAll = " + bookAll);
+//        List<UserDto> userDtoList = externalService.findAllUser();
+//        System.out.println("userDtoList = " + userDtoList);
 //        List<String> bookIds = externalService.searchAllRequest();
 //        for (UserDto userDto : userDtoList) {
 //            new Thread(() -> {

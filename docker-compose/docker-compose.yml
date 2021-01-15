@@ -1,5 +1,13 @@
 version: '3'
 services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8.10-rc.5-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - ./env/rabbitmq.env
   seata-server:
     image: seataio/seata-server
     container_name: seata-server

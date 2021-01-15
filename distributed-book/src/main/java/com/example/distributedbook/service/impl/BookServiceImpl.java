@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -57,5 +58,10 @@ public class BookServiceImpl implements BookService {
         Book book = DtoUtils.changeBook(voBook);
         book.setUserId(userId);
         return this.save(book);
+    }
+
+    @Override
+    public List<Book> findBookAll() {
+        return (List<Book>) bookRepository.findAll();
     }
 }
