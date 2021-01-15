@@ -14,6 +14,8 @@ services:
       - ./mysql-nacos/db:/var/lib/mysql
     ports:
       - "3308:3306"
+    networks:
+      - nacos
   nacos:
     image: nacos/nacos-server
     container_name: nacos
@@ -25,6 +27,8 @@ services:
     ports:
       - "8848:8848"
       - "9555:9555"
+    networks:
+      - nacos
     depends_on:
       - mysql-nacos
   mysql-zipkin:
@@ -46,8 +50,7 @@ services:
     networks:
       - zipkin
     ports:
-      # Port used for the Zipkin UI and HTTP Api
-      - 9411:9411
+      - '9411:9411'
     depends_on:
       - mysql-zipkin
 
@@ -99,7 +102,7 @@ services:
       - data01:/usr/share/elasticsearch/data
       - .\plugins:/usr/share/elasticsearch/plugins
     ports:
-      - 9200:9200
+      - '9200:9200'
     networks:
       - elastic
   es02:
@@ -132,4 +135,6 @@ networks:
   elastic:
     driver: bridge
   zipkin:
+    driver: bridge
+  nacos:
     driver: bridge
