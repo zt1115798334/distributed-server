@@ -5,41 +5,44 @@ services:
     container_name: seata-server
     ports:
       - '8091:8091'
-  nacos-server:
-    image: nacos/nacos-server
-    container_name: nacos-server
+  mysql-nacos:
+    container_name: mysql-nacos
+    image: nacos/nacos-mysql:8.0.16
+    env_file:
+      - ./env/mysql-nacos.env
+    volumes:
+      - ./mysql-nacos/db:/var/lib/mysql
     ports:
-      - '8848:8848'
+      - "3308:3306"
+  nacos:
+    image: nacos/nacos-server
+    container_name: nacos
+    env_file:
+      - ./env/nacos.env
+    volumes:
+      - ./nacos-logs/:/home/nacos/logs
+#      - ./init.d/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "8848:8848"
+      - "9555:9555"
+    depends_on:
+      - mysql-nacos
   mysql-zipkin:
     image: registry.cn-hangzhou.aliyuncs.com/zt_images/mysql-zipkin:latest
     container_name: mysql-zipkin
     ports:
       - '3307:3306'
-    environment:
-      MYSQL_USER: zipkin
-      MYSQL_PASSWORD: zipkin
-      MYSQL_ROOT_PASSWORD: root
+    env_file:
+     - ./env/mysql-zipkin.env
     volumes:
-      - .\mysql-server\db:/var/lib/mysql
+      - ./mysql-zipkin/db:/var/lib/mysql
     networks:
       - zipkin
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
-    environment:
-      - STORAGE_TYPE=mysql
-      # Point the zipkin at the storage backend
-      - MYSQL_DB=zipkin
-      - MYSQL_USER=zipkin
-      - MYSQL_PASS=zipkin
-      - MYSQL_HOST=mysql-zipkin
-      - MYSQL_TCP_PORT=3306
-      # Uncomment to enable scribe
-      # - SCRIBE_ENABLED=true
-      # Uncomment to enable self-tracing
-      # - SELF_TRACING_ENABLED=true
-      # Uncomment to enable debug logging
-      # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG -Dlogging.level.zipkin2=DEBUG
+    env_file:
+      - ./env/zipkin.env
     networks:
       - zipkin
     ports:
@@ -54,8 +57,8 @@ services:
     ports:
       - '8989:8989'
     volumes:
-      - .\config\zdy.conf:/etc/nginx/conf.d/zdy.conf
-      - .\dic:/usr/share/nginx/dic
+      - ./config/zdy.conf:/etc/nginx/conf.d/zdy.conf
+      - ./dic:/usr/share/nginx/dic
     networks:
       - elastic
     logging:

@@ -5,6 +5,7 @@ import com.example.distributedcommon.base.ResultMessage;
 import com.example.distributedcommon.custom.SystemStatusCode;
 import com.example.distributedcommon.exception.OperationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
@@ -19,7 +20,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,13 +84,15 @@ public class GlobalException {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResultMessage resolveConstraintViolationException(ConstraintViolationException ex) {
-        log.error(ex.getMessage());
-        ex.printStackTrace();
-        Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
-        String result = constraintViolations.stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(","));
-        return new ResultMessage().error(SystemStatusCode.PARAMS_VALIDATION_FAILED.getCode(), result);
+//        log.error(ex.getMessage());
+//        ex.printStackTrace();
+////        ex.
+//        ex.
+//        Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+//        String result = constraintViolations.stream()
+//                .map(ConstraintViolation::getMessage)
+//                .collect(Collectors.joining(","));
+        return new ResultMessage().error(SystemStatusCode.PARAMS_VALIDATION_FAILED.getCode(), "result");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
