@@ -1,26 +1,35 @@
 
 #开始使用 nacos 注册中心
-eureka:
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
-  instance:
-    prefer-ip-address: true
-    instance-id: service-distributed-book
-    lease-expiration-duration-in-seconds: 5
-    lease-renewal-interval-in-seconds: 2
+#eureka:
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: service-distributed-book
+#    lease-expiration-duration-in-seconds: 5
+#    lease-renewal-interval-in-seconds: 2
 
 spring:
   cloud:
-    config:
-      uri: http://127.0.0.1:8769/ # 配置中心的具体地址，即 config-server
-      name: distributed-book # 对应 {application} 部分
-      profile: dev
-      label: master # 对应 {label} 部分，即 Git 的分支。如果配置中心使用的是本地存储，则该参数无用
+    nacos:
       discovery:
-        enabled: true
-        service-id: service-distributed-config
+        server-addr: 127.0.0.1:8848
+      config:
+        file-extension: yaml
+        group: DEFAULT_GROUP  # 缺省即可
+        prefix: distributed-book # 缺省即可
+  profiles:
+    active: dev
+#    config:
+#      uri: http://127.0.0.1:8769/ # 配置中心的具体地址，即 config-server
+#      name: distributed-book # 对应 {application} 部分
+#      profile: dev
+#      label: master # 对应 {label} 部分，即 Git 的分支。如果配置中心使用的是本地存储，则该参数无用
+#      discovery:
+#        enabled: true
+#        service-id: service-distributed-config
 
 
