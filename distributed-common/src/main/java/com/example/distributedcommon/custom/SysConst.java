@@ -38,20 +38,9 @@ public class SysConst {
     public static final String SOURCE_ALL = "all";
     public static final String SOURCE_OTHER = "other";
     public static final List<String> SOURCE_ALL_LIST = Collections.singletonList(SOURCE_ALL);
-    public static final String REDIS_CHANNEL = "ansj_term";
     public static final String UTF_8 = "UTF-8";
 
     public static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
-
-
-    public static final String MENU_DEFAULT_INDEX = "index"; //首页
-    public static final String MENU_DEFAULT_SPECIAL_MONITOR = "specialMonitor"; //专题
-    public static final String MENU_DEFAULT_WARNING = "warning"; //预警
-    public static final String MENU_DEFAULT_EVENT = "event"; //事件
-    public static final String MENU_DEFAULT_BRIEFING = "briefing"; //报告
-    public static final String MENU_DEFAULT_APP_CENTER_MENU = "appCenterMenu"; //个人中心
-
-    public static final String IMG_URL = "/api/fileInfo/findImg?fileInfoId=";//图片展示
 
     ///////////////////////////////////////////////////////////////////////////
     // 通用常量 -- 多实体类通用
