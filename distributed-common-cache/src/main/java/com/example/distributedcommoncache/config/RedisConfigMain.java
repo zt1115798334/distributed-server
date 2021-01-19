@@ -5,9 +5,10 @@ import com.example.distributedcommoncache.service.RedisService;
 import com.example.distributedcommoncache.service.template.JSONArrayRedisTemplate;
 import com.example.distributedcommoncache.service.template.JSONObjectRedisTemplate;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -35,6 +36,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scripting.support.ResourceScriptSource;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -52,8 +54,8 @@ public class RedisConfigMain extends CachingConfigurerSupport {
 
     @Bean
     @ConfigurationProperties(prefix = "spring.redis.lettuce.pool")
-    public GenericObjectPoolConfig redisPool() {
-        return new GenericObjectPoolConfig();
+    public JedisPoolConfig redisPool() {
+        return new JedisPoolConfig();
     }
 
     /**
@@ -84,13 +86,13 @@ public class RedisConfigMain extends CachingConfigurerSupport {
      */
     @Primary
     @Bean("factoryZero")
-    public LettuceConnectionFactory factoryZero(GenericObjectPoolConfig config, @Qualifier("redisConfigZero") RedisStandaloneConfiguration redisConfigZero) {
+    public LettuceConnectionFactory factoryZero(JedisPoolConfig config, @Qualifier("redisConfigZero") RedisStandaloneConfiguration redisConfigZero) {
         LettuceClientConfiguration clientConfiguration = LettucePoolingClientConfiguration.builder().poolConfig(config).build();
         return new LettuceConnectionFactory(redisConfigZero, clientConfiguration);
     }
 
     @Bean("factoryFirst")
-    public LettuceConnectionFactory factoryFirst(GenericObjectPoolConfig config, @Qualifier("redisConfigFirst") RedisStandaloneConfiguration redisConfigFirst) {
+    public LettuceConnectionFactory factoryFirst(JedisPoolConfig config, @Qualifier("redisConfigFirst") RedisStandaloneConfiguration redisConfigFirst) {
         LettuceClientConfiguration clientConfiguration = LettucePoolingClientConfiguration.builder().poolConfig(config).build();
         return new LettuceConnectionFactory(redisConfigFirst, clientConfiguration);
     }
@@ -217,7 +219,8 @@ public class RedisConfigMain extends CachingConfigurerSupport {
         ObjectMapper copy = objectMapper.copy();
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         copy.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        copy.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        copy.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         jackson2JsonRedisSerializer.setObjectMapper(copy);
 //        ObjectMapper om = new ObjectMapper();
 //        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);

@@ -2,7 +2,6 @@ package com.example.distributedbookdetails.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.distributedbookdetails.entity.BookDetails;
-import com.example.distributedbookdetails.externalService.custom.SysConst;
 import com.example.distributedbookdetails.externalService.domain.EsArticle;
 import com.example.distributedbookdetails.externalService.domain.EsPage;
 import com.example.distributedbookdetails.externalService.service.EsArticleService;
@@ -10,6 +9,7 @@ import com.example.distributedbookdetails.externalService.utils.EsParamsUtils;
 import com.example.distributedbookdetails.service.BookDetailsService;
 import com.example.distributedcommon.base.BaseResultMessage;
 import com.example.distributedcommon.base.ResultMessage;
+import com.example.distributedcommon.custom.SysConst;
 import com.example.distributedcommon.utils.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
