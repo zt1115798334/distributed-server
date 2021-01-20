@@ -24,6 +24,7 @@
 
     <modules>
         <module>distributed-eureka</module>
+        <module>distributed-log</module>
         <module>distributed-common</module>
         <module>distributed-common-datasource</module>
         <module>distributed-common-cache</module>
@@ -51,6 +52,11 @@
             <dependency>
                 <groupId>com.example</groupId>
                 <artifactId>distributed-eureka</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>distributed-log</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -92,6 +98,21 @@
                 <groupId>com.example</groupId>
                 <artifactId>distributed-book-details</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

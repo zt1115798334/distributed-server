@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -49,6 +50,7 @@ import java.util.Map;
  * date: 2019/8/1 11:49
  * description:
  */
+@Slf4j
 @Configuration
 public class RedisConfigMain extends CachingConfigurerSupport {
 
@@ -169,7 +171,7 @@ public class RedisConfigMain extends CachingConfigurerSupport {
         defaultRedisScript.setResultType(Boolean.class);
         defaultRedisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/IdentityRedisScript.lua")));
         String sha1 = defaultRedisScript.getSha1();
-        System.out.println("sha1 = " + sha1);
+        log.info("sha1:{}", sha1);
         return defaultRedisScript;
     }
 

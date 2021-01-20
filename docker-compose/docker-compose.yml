@@ -7,7 +7,7 @@ services:
       - '5672:5672'
       - '15672:15672'
     env_file:
-      - ./env/rabbitmq.env
+      - ./rabbitmq/env/rabbitmq.env
   seata-server:
     image: seataio/seata-server
     container_name: seata-server
@@ -17,7 +17,7 @@ services:
     container_name: mysql-nacos
     image: nacos/nacos-mysql:8.0.16
     env_file:
-      - ./env/mysql-nacos.env
+      - ./mysql-nacos/env/mysql-nacos.env
     volumes:
       - ./mysql-nacos/db:/var/lib/mysql
     ports:
@@ -28,9 +28,9 @@ services:
     image: nacos/nacos-server
     container_name: nacos
     env_file:
-      - ./env/nacos.env
+      - ./nacos/env/nacos.env
     volumes:
-      - ./nacos-logs/:/home/nacos/logs
+      - ./nacos/logs/:/home/nacos/logs
 #      - ./init.d/custom.properties:/home/nacos/init.d/custom.properties
     ports:
       - "8848:8848"
@@ -45,7 +45,7 @@ services:
     ports:
       - '3307:3306'
     env_file:
-     - ./env/mysql-zipkin.env
+     - ./mysql-zipkin/env/mysql-zipkin.env
     volumes:
       - ./mysql-zipkin/db:/var/lib/mysql
     networks:
@@ -54,22 +54,21 @@ services:
     image: openzipkin/zipkin
     container_name: zipkin
     env_file:
-      - ./env/zipkin.env
+      - ./zipkin/env/zipkin.env
     networks:
       - zipkin
     ports:
       - '9411:9411'
     depends_on:
       - mysql-zipkin
-
   dic:
     container_name: dic
     image: nginx
     ports:
       - '8989:8989'
     volumes:
-      - ./config/zdy.conf:/etc/nginx/conf.d/zdy.conf
-      - ./dic:/usr/share/nginx/dic
+      - ./dic/config/zdy.conf:/etc/nginx/conf.d/zdy.conf
+      - ./dic/dic:/usr/share/nginx/dic
     networks:
       - elastic
     logging:
@@ -79,14 +78,28 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.1
     container_name: kibana
-    environment:
-      - I18N_LOCALE=zh-CN
-      - XPACK_GRAPH_ENABLED=true
-      - TIMELION_ENABLED=true
-      - XPACK_MONITORING_COLLECTION_ENABLED="true"
-      - ELASTICSEARCH_HOSTS="http://es01:9200"
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     ports:
       - "5601:5601"
+    networks:
+      - elastic
+    depends_on:
+      - es01
+      - es02
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.10.1
+    container_name: logstash
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elastic
     depends_on:
@@ -101,16 +114,19 @@ services:
       - discovery.seed_hosts=es02
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
+#      - ELASTIC_PASSWORD=elastic
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
+      - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins:ro
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - data01:/usr/share/elasticsearch/data
-      - .\plugins:/usr/share/elasticsearch/plugins
     ports:
-      - '9200:9200'
+      - "9200:9200"
+      - "9300:9300"
     networks:
       - elastic
   es02:
@@ -122,14 +138,16 @@ services:
       - discovery.seed_hosts=es01
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
+#      - ELASTIC_PASSWORD=elastic
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
+      - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins:ro
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - data02:/usr/share/elasticsearch/data
-      - .\plugins:/usr/share/elasticsearch/plugins
     networks:
       - elastic
 

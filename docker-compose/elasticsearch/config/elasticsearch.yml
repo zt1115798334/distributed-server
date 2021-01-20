@@ -86,4 +86,8 @@
 # Require explicit names when deleting indices:
 #
 #action.destructive_requires_name: true
-http.host: 0.0.0.0
+network.host: 0.0.0.0
+#xpack.license.self_generated.type: basic
+#xpack.security.enabled: true
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.audit.enabled: true

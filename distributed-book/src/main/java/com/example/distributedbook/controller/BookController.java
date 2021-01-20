@@ -11,6 +11,7 @@ import com.example.distributedcommon.vo.VoBook;
 import com.example.distributedcommondatasource.entity.dto.UserDto;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import java.util.Random;
  * date: 2020/12/21 17:41
  * description:
  */
+@Slf4j
 @AllArgsConstructor
 @RequestMapping("api/book")
 @RestController
@@ -44,6 +46,7 @@ public class BookController extends BaseResultMessage {
         Random random = new Random();
         List<Book> bookAll = bookService.findBookAll();
         System.out.println("bookAll = " + bookAll);
+        log.info("test");
 //        List<UserDto> userDtoList = externalService.findAllUser();
 //        System.out.println("userDtoList = " + userDtoList);
 //        List<String> bookIds = externalService.searchAllRequest();

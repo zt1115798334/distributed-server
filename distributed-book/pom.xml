@@ -73,7 +73,11 @@
 			<artifactId>spring-cloud-starter-zipkin</artifactId>
 		</dependency>
 
-
+		<dependency>
+			<groupId>com.example</groupId>
+			<artifactId>distributed-log</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.example</groupId>
 			<artifactId>distributed-common-datasource</artifactId>
