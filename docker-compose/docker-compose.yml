@@ -115,6 +115,7 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - ELASTIC_PASSWORD=elastic
+      - KEYSTORE_PASSWORD=elastic
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -123,6 +124,7 @@ services:
     volumes:
       - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins:ro
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
       - data01:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
@@ -139,6 +141,7 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - ELASTIC_PASSWORD=elastic
+      - KEYSTORE_PASSWORD=elastic
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -147,6 +150,7 @@ services:
     volumes:
       - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins:ro
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/config/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
       - data02:/usr/share/elasticsearch/data
     networks:
       - elastic
