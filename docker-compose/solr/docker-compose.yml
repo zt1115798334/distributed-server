@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  solr:
+    image: solr:8.7.0
+    container_name: solr
+    ports:
+      - "8983:8983"
+    volumes:
+      - data:/var/solr
+      - ./ik/conf/managed-schema:/var/solr/data/gettingstarted/conf/managed-schema
+      - ./ik/class/:/opt/solr-8.7.0/server/solr-webapp/webapp/WEB-INF/classes/:rw
+      - ./ik/jar/ik-analyzer-8.4.0.jar:/opt/solr-8.7.0/server/solr-webapp/webapp/WEB-INF/lib/ik-analyzer-8.4.0.jar:ro
+    command:
+      - solr-precreate
+      - gettingstarted
+volumes:
+  data:

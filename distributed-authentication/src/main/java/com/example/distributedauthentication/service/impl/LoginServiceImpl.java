@@ -7,7 +7,6 @@ import com.example.distributedauthentication.utils.JwtTokenUtil;
 import com.example.distributedcommon.custom.SystemStatusCode;
 import com.example.distributedcommon.exception.OperationException;
 import com.example.distributedcommoncache.custom.CacheKeys;
-import com.example.distributedcommoncache.service.RedisDatabase;
 import com.example.distributedcommoncache.service.StringRedisService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
