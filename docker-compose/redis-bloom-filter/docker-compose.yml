@@ -1,0 +1,5 @@
+version: '3'
+services:
+  redis-redisbloom:
+    container_name: redis-redisbloom
+    image: redislabs/rebloom
