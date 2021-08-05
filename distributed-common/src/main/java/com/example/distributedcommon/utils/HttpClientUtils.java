@@ -222,7 +222,7 @@ public class HttpClientUtils {
                 if (statusCode == HttpStatus.SC_OK) {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
-                        IOUtils.copy(response.getEntity().getContent(), out);
+                            IOUtils.copy(response.getEntity().getContent(), out);
                     }
                 } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                     // 302
