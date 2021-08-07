@@ -1,0 +1,34 @@
+version: '2.0'
+services:
+  rabbitmq-master:
+    hostname: rabbitmq-master
+    container_name: rabbitmq-master
+    image: rabbitmq:management
+    ports:
+#      - "4369:4369"
+#      - "5671:5671"
+#      - "5672:5672"
+#      - "15671:15671"
+      - "15672:15672"
+#      - "25672:25672"
+    volumes:
+#      - ./data-master/rabbitmq:/var/lib/rabbitmq
+#      - /etc/localtime:/etc/localtime
+      - ./config/rabbitmq.conf:/etc/rabbitmq/conf.d/rabbitmq.conf
+      - ./cookie/erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+  rabbitmq-slave:
+    hostname: rabbitmq-slave
+    container_name: rabbitmq-slave
+    image: rabbitmq:management
+#    ports:
+#      - "4369:4369"
+#      - "5671:5671"
+#      - "5672:5672"
+#      - "15671:15671"
+#      - "15672:15672"
+#      - "25672:25672"
+    volumes:
+#      - ./data-slave/rabbitmq:/var/lib/rabbitmq
+#      - /etc/localtime:/etc/localtime
+      - ./config/rabbitmq.conf:/etc/rabbitmq/conf.d/rabbitmq.conf
+      - ./cookie/erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
