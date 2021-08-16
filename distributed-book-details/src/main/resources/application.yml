@@ -1,28 +1,28 @@
 server:
   port: 8784
 #开始使用 nacos 注册中心
-#eureka:
-#  client:
-#    fetch-registry: true
-#    register-with-eureka: true
-#    service-url:
-#      defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
-#  instance:
-#    prefer-ip-address: true
-#    instance-id: service-distributed-book-details
-#    lease-expiration-duration-in-seconds: 5
-#    lease-renewal-interval-in-seconds: 2
-feign:
-  hystrix:
-    enabled: true
-  compression:
-    request:
-      enabled: true
-      mime-types: # 可以被压缩的类型
-        - text/xml
-        - application/xml
-        - application/json
-      min-request-size: 2048 # 超过2048的字节进行压缩
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://admin:admin@eureka-server1:8761/eureka,http://admin:admin@eureka-server2:8762/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: service-distributed-book-details
+    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 2
+#feign:
+#  hystrix:
+#    enabled: true
+#  compression:
+#    request:
+#      enabled: true
+#      mime-types: # 可以被压缩的类型
+#        - text/xml
+#        - application/xml
+#        - application/json
+#      min-request-size: 2048 # 超过2048的字节进行压缩
 spring:
   application:
     name: service-distributed-book-details

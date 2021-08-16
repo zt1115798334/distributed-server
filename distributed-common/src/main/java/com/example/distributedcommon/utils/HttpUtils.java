@@ -160,16 +160,5 @@ public class HttpUtils {
         log.info("请求信息，URL：{}, Headers：{},Params：{}, ", url, headerMap, paramMap);
     }
 
-    public static void main(String[] args) {
-        HttpUtils httpUtils = HttpUtils.getInstance();
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("name", "tests");
-        paramMap.put("age", "111");
-        String s1 = httpUtils.doGet("http://localhost:8898/student/testGet", Collections.emptyMap(), paramMap).orElse("");
-        String s2 = httpUtils.doPostForm("http://localhost:8898/student/testPostFor", Collections.emptyMap(), paramMap).orElse("");
-        String s3 = httpUtils.doPostJSON("http://localhost:8898/student/testPostJSON", Collections.emptyMap(), paramMap).orElse("");
-        System.out.println("s1 = " + s1);
-        System.out.println("s2 = " + s2);
-        System.out.println("s3 = " + s3);
-    }
+
 }
