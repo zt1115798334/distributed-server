@@ -24,7 +24,7 @@
 
     <modules>
         <module>distributed-eureka</module>
-        <module>distributed-log</module>
+<!--        <module>distributed-log</module>-->
         <module>distributed-common</module>
         <module>distributed-common-datasource</module>
         <module>distributed-common-cache</module>
