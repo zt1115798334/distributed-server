@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -19,12 +18,18 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,16 +60,24 @@ public class HttpUtils {
         return INSTANCE;
     }
 
-    public Optional<String> doGet(String url,  Map<String, Object> paramMap) {
+    public Optional<String> doGet(String url, Map<String, Object> paramMap) {
         return doGet(url, Collections.emptyMap(), paramMap);
     }
 
-    public Optional<String> doPostForm(String url,  Map<String, Object> paramMap) {
+    public Optional<String> doPostForm(String url, Map<String, Object> paramMap) {
         return doPostForm(url, Collections.emptyMap(), paramMap);
     }
 
-    public Optional<String> doPostJSON(String url,  Map<String, Object> paramMap) {
+    public Optional<String> doPostJSON(String url, Map<String, Object> paramMap) {
         return doPostJSON(url, Collections.emptyMap(), paramMap);
+    }
+
+    public void doGetDown(String url, Map<String, Object> paramMap, HttpResponse response) {
+        doGetDown(url, Collections.emptyMap(), paramMap, response);
+    }
+
+    public void doGetDownPath(String url, Map<String, Object> paramMap, Path path) {
+        doGetDownPath(url, Collections.emptyMap(), paramMap, path);
     }
 
     public Optional<String> doGet(String url, Map<String, String> headerMap, Map<String, Object> paramMap) {
@@ -72,10 +85,10 @@ public class HttpUtils {
         Optional<String> result = Optional.empty();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(url);
-            builder.setParameters( createNameValuePair(paramMap));
+            builder.setParameters(createNameValuePair(paramMap));
             HttpGet httpGet = new HttpGet(builder.build());
             httpGet.setHeaders(createHeaders(headerMap));
-            result = executeHttp(url, headerMap, paramMap,  httpClient, httpGet);
+            result = executeHttp(url, headerMap, paramMap, httpClient, httpGet);
         } catch (IOException | URISyntaxException e) {
             log.error("请求异常，URL：{}, Headers：{},Params：{}, Exception: {}", url, headerMap, paramMap, e);
         }
@@ -89,7 +102,7 @@ public class HttpUtils {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeaders(createHeaders(headerMap));
             httpPost.setEntity(new UrlEncodedFormEntity(createNameValuePair(paramMap), StandardCharsets.UTF_8));
-            result = executeHttp(url, headerMap, paramMap,  httpClient, httpPost);
+            result = executeHttp(url, headerMap, paramMap, httpClient, httpPost);
         } catch (IOException e) {
             log.error("请求异常，URL：{}, Headers：{},Params：{}, Exception: {}", url, headerMap, paramMap, e);
         }
@@ -103,7 +116,7 @@ public class HttpUtils {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setHeaders(createHeaders(headerMap));
             httpPost.setEntity(new StringEntity(JSONObject.toJSONString(paramMap), ContentType.APPLICATION_JSON));
-            result = executeHttp(url, headerMap, paramMap,  httpClient, httpPost);
+            result = executeHttp(url, headerMap, paramMap, httpClient, httpPost);
         } catch (IOException e) {
             log.error("请求异常，URL：{}, Headers：{},Params：{}, Exception: {}", url, headerMap, paramMap, e);
         }
@@ -113,7 +126,7 @@ public class HttpUtils {
     public void doGetDown(String url, Map<String, String> headerMap, Map<String, Object> paramMap, HttpResponse response) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(url);
-            builder.setParameters( createNameValuePair(paramMap));
+            builder.setParameters(createNameValuePair(paramMap));
             HttpGet httpGet = new HttpGet(builder.build());
             String responseBody = httpClient.execute(httpGet, httpResponse -> {
                 int status = httpResponse.getStatusLine().getStatusCode();
@@ -132,7 +145,31 @@ public class HttpUtils {
         }
     }
 
-    private Optional<String> executeHttp(String url, Map<String, String> headerMap, Map<String, Object> paramMap,  CloseableHttpClient httpClient, HttpRequestBase httpRequestBase) throws IOException {
+    public void doGetDownPath(String url, Map<String, String> headerMap, Map<String, Object> paramMap, Path path) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            URIBuilder builder = new URIBuilder(url);
+            builder.setParameters(createNameValuePair(paramMap));
+            HttpGet httpGet = new HttpGet(builder.build());
+            String responseBody = httpClient.execute(httpGet, httpResponse -> {
+                int status = httpResponse.getStatusLine().getStatusCode();
+                if (status < 200 || status >= 300) {
+                    log.error("请求失败，URL：{}, Headers：{},Params：{}, ", url, headerMap, paramMap);
+                }
+                HttpEntity entity = httpResponse.getEntity();
+                if (entity != null) {
+                    InputStream inputStream = entity.getContent();
+                    Files.copy(inputStream, path);
+                }
+                return "success";
+            });
+            log.info(responseBody);
+
+        } catch (IOException | URISyntaxException e) {
+            log.error("请求异常，URL：{}, Headers：{},Params：{}, Exception: {}", url, headerMap, paramMap, e);
+        }
+    }
+
+    private Optional<String> executeHttp(String url, Map<String, String> headerMap, Map<String, Object> paramMap, CloseableHttpClient httpClient, HttpRequestBase httpRequestBase) throws IOException {
         String responseBody = httpClient.execute(httpRequestBase, httpResponse -> {
             int status = httpResponse.getStatusLine().getStatusCode();
             if (status < 200 || status >= 300) {
@@ -160,5 +197,8 @@ public class HttpUtils {
         log.info("请求信息，URL：{}, Headers：{},Params：{}, ", url, headerMap, paramMap);
     }
 
+    public static void main(String[] args) {
+        HttpUtils.getInstance().doGetDownPath("https://img-operation.csdnimg.cn/csdn/silkroad/img/1629276178344.png", Collections.emptyMap(), Paths.get("D:\\img\\ddd.png"));
+    }
 
 }
