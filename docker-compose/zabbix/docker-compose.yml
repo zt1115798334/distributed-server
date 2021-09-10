@@ -1,0 +1,12 @@
+version: '2.0'
+services:
+  zabbix:
+    hostname: zabbix
+    container_name: zabbix
+    image: zabbix/zabbix-server-mysql:alpine-trunk
+    environment:
+      - DB_SERVER_HOST=192.168.138.215
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    ports:
+      - 10051:10051
